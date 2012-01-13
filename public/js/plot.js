@@ -1,32 +1,35 @@
+;(function(undefined){
 
-window.onload = setTimeout("updateGraph()",3000);
-var data = {};
-function updateGraph() {
-	var palette = new Rickshaw.Color.Palette(),
-            request = new XMLHttpRequest();
+  function requestData(){
+    return jQuery.getJSON('/json');
+  }
 
-	request.open("GET", '/json', true);
-	request.onreadystatechange = function () {
-		var done = 4, ok = 200;
-		if (request.readyState == done && request.status == ok) {
-			data = request.responseText;
-		}
-	};
-	request.send(null);
+  function updateGraph(response, status, jqXHR){
+    var $target = jQuery('#firstGraph'),
+        palette = new Rickshaw.Color.Palette(),
+        graph;
 
-	Dumper.write(data);
-/*	var graph = new Rickshaw.Graph( {
-        	element: document.querySelector("#firstGraph"),
-//        	width: 	document.getElementById('firstGraph').currentStyle[width],
-//        	height: document.getElementById('firstGraph').currentStyle[height],
-		width: 200,
-		height: 200,
-        	series: [ {
-                	color: palette.color,
-                	data:  data
-	        } ]
-	} );
-	graph.render();
-*/
-}
+    if(status === 'success'){
+      graph = new Rickshaw.Graph({
+        element: $target[0],
+        height: $target.height(),
+        width: $target.width(),
+        series: [{
+          color: palette.color,
+          data: response
+        }]
+      }).render();
+    } else {
+      console.error('Oops, Something went wrong!', {
+        'response': response,
+        'status': status,
+        'jqXHR': jqXHR
+      });
+    }
+  }
 
+  jQuery(function(){
+    requestData().done(updateGraph);
+  });
+
+}.call(this));
