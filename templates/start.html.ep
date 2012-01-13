@@ -1,0 +1,10 @@
+% layout 'html5';
+% title "Let's get going!";
+
+<div class="table">
+  <div class="graphs">
+    <div id="firstGraph" style="width: 100px;height: 100px;">
+
+    </div>
+  </div>
+</div>

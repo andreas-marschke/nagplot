@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+use Mojolicious::Lite;
+use Data::Dumper;
+
+
+get '/' => sub {
+  my $self = shift;
+  $self->redirect_to('/web');
+};
+
+get '/web' => sub {
+  my $self = shift;
+  $self->render('start');
+};
+
+get '/json' => sub {
+        my $self = shift;
+        my $json = [{ x => 1, y => 2 }, {x => 22, y => 31 }, {x => 22, y => 11}];
+        $self->render_json( $json );
+};
+app->start;
