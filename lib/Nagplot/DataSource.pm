@@ -52,7 +52,7 @@ use 5.010_000;
 use strict;
 use warnings;
 use Moose;
-use Module::Pluggable search_path => '', require => 1, instantiate => 'new';
+use Module::Pluggable search_path => 'Nagplot::DataSource', require => 1, instantiate => 'new';
 
 has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
 
@@ -60,7 +60,7 @@ sub hosts {
   my $self = shift;
 
   my @hosts;
-  foreach my $plugin ($self->plugins($self->config->{DataSource})) {
+  foreach my $plugin ($self->plugins(config => $self->config)) {
      push (@hosts,$plugin->hosts());
   }
   return @hosts;
@@ -69,9 +69,10 @@ sub hosts {
 sub services {
   my $self = shift;
   my $host = shift;
+
   my @services;
-  foreach my $plugin ($self->plugins($self->config->{DataSource})) {
-    push (@services,$plugin->services());
+  foreach my $plugin ($self->plugins(config => $self->config)) {
+    push (@services,$plugin->services($host));
   }
   return @services;
 }
@@ -87,7 +88,7 @@ sub query_state {
   my $host = shift;
   my $service = shift;
   my $state;
-  foreach my $plugin ($self->plugins($self->config->{DataSource})) {
+  foreach my $plugin ($self->plugins(config => $self->config)) {
     foreach my $plugin_host ($plugin->hosts) {
       if ($plugin_host == $host) {
 	foreach my $plugin_service ($plugin->services()) {
@@ -100,9 +101,6 @@ sub query_state {
   }
   return $state;
 }
-
-
-
 
 no Moose;
 1;

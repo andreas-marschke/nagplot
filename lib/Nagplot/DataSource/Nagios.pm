@@ -18,6 +18,7 @@ use strict;
 use warnings;
 use Moose;
 use Mojo::UserAgent;
+use HTML::TableExtract;
 
 has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
 
@@ -62,6 +63,22 @@ sub hosts {
 
 sub services {
   my $self = shift;
+  my $host = shift;
+  my $ua = Mojo::UserAgent->new;
+  my $url = $self->build_url();
+  $url .= "/config.cgi?type=services&expand=".$host;
+  my $div = $ua->get($url)->res->dom->at('.data');
+  my $content = $div->to_xml();
+  my $te = HTML::TableExtract->new();
+  $te->parse($content);
+  my @services;
+  foreach my $ts ( $te->tables ) {
+    foreach my $row ( $ts->rows ) {
+      push @services,$row->[5];
+    }
+  }
+  @services = grep m/^check_/, @services;
+  return @services;
 }
 
 sub query_state {

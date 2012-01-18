@@ -1,7 +1,9 @@
 #!/usr/bin/env perl
 use Mojolicious::Lite;
+use Nagplot::DataSource;
 use Data::Dumper;
 
+my $config = plugin 'Config';
 
 get '/' => sub {
   my $self = shift;
@@ -13,9 +15,18 @@ get '/web' => sub {
   $self->render('start');
 };
 
-get '/json' => sub {
+get '/json/:command' => sub {
         my $self = shift;
-        my $json = [{ x => 1, y => 2 }, {x => 22, y => 31 }, {x => 22, y => 11}];
-        $self->render_json( $json );
+#	print Dumper($self);
+	my $ds = Nagplot::DataSource->new(config => $config->{DataSource} );
+	if ( $self->stash('command') eq 'hosts' ) {
+		$self->render_json([$ds->hosts]);
+	} elsif ( $self->stash('command') eq 'services' ) {
+		$self->render_json([$ds->services($self->param('host'))]);
+	} elsif ( $self->stash('command') eq 'query_state' ) {
+		$self->render_json([$ds->query_state($self->param('host'),$self->param('services'))]);
+	} else {
+		$self->render_json([]);
+	}
 };
 app->start;
