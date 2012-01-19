@@ -1,7 +1,15 @@
 ;(function(undefined){
 
-  function requestData(){
-    return jQuery.getJSON('/json');
+  function requestState(host,service) {
+    return jQuery.getJSON('/json/query_state?host=' + host + '&service=' + service );
+  }
+
+  function requestService(host) { 
+    return jQuery.getJSON('/json/services?host=' + host);
+  }
+
+  function requestHost() {
+    return jQuery.getJSON('/json/hosts');
   }
 
   function updateGraph(response, status, jqXHR){
@@ -28,8 +36,8 @@
     }
   }
 
-  jQuery(function(){
-    requestData().done(updateGraph);
-  });
+  setTimeout(jQuery(function(){
+    requestState('ftp','check_ftp').done(updateGraph);
+  }),300);
 
 }.call(this));
