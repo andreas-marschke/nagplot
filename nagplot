@@ -4,7 +4,7 @@ use Nagplot::DataSource;
 use Data::Dumper;
 
 my $config = plugin 'Config';
-
+app->secret($config->{secret});
 get '/' => sub {
   my $self = shift;
   $self->redirect_to('/web');
@@ -24,7 +24,7 @@ get '/json/:command' => sub {
 	} elsif ( $self->stash('command') eq 'services' ) {
 		$self->render_json([$ds->services($self->param('host'))]);
 	} elsif ( $self->stash('command') eq 'query_state' ) {
-		$self->render_json([$ds->query_state($self->param('host'),$self->param('services'))]);
+		$self->render_json([$ds->query_state($self->param('host'),$self->param('service'))]);
 	} else {
 		$self->render_json([]);
 	}
