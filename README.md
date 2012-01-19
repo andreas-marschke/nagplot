@@ -56,6 +56,15 @@ to define in the configuration file.
 Please refer to the deployment section of the  [Mojolicious wiki](https://github.com/kraih/mojo/wiki).
 For a quick run to see if it works just run: `perl nagplot daemon` and open up a webbrowser at 127.0.0.1:3000.
 
+## How write a frontend
+
+Nagplot provides a very easy to use json frontend to the modules. As a frontend/javascript developer 
+you only need to know 3 queries:
+
+ - /json/hosts - get all queriable hosts
+ - /json/services?host=$value - get all services for a host where $value is the name of the host
+ - /json/query_state?host=$host&service=$service - get a value describing the state
+
 
 ## Implementation
 
