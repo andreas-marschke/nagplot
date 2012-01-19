@@ -52,7 +52,8 @@ use 5.010_000;
 use strict;
 use warnings;
 use Moose;
-use Module::Pluggable search_path => 'Nagplot::DataSource', require => 1, instantiate => 'new';
+use Module::Pluggable search_path => 'Nagplot::DataSource', require => 1, instantiate => 'new', except => ['Nagplot::DataSource::Dummy'];
+#use Module::Pluggable search_path => 'Nagplot::DataSource', require => 1, instantiate => 'new', only => ['Nagplot::DataSource::Dummy'];
 
 has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
 
@@ -90,9 +91,9 @@ sub query_state {
   my $state;
   foreach my $plugin ($self->plugins(config => $self->config)) {
     foreach my $plugin_host ($plugin->hosts) {
-      if ($plugin_host == $host) {
-	foreach my $plugin_service ($plugin->services()) {
-	  if ($plugin_service == $service) {
+      if ($plugin_host eq $host) {
+	foreach my $plugin_service ($plugin->services($host)) {
+	  if ($plugin_service eq $service) {
 	    $state = $plugin->query_state($host, $service);
 	  }
 	}
