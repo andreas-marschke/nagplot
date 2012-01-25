@@ -120,7 +120,7 @@ sub hosts {
   my $ua = Mojo::UserAgent->new;
   my $url = $self->build_url();
   $url .= "/config.cgi?type=hosts";
-  my $div = $ua->get($url)->res->dom->at('.data');
+  my $div = $ua->get($url)->res->dom->at('.data') or return "";
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
@@ -140,7 +140,7 @@ sub services {
   my $ua = Mojo::UserAgent->new;
   my $url = $self->build_url();
   $url .= "/config.cgi?type=services&expand=".$host;
-  my $div = $ua->get($url)->res->dom->at('.data');
+  my $div = $ua->get($url)->res->dom->at('.data') or return "";
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
