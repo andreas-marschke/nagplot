@@ -3,25 +3,27 @@
 ## create containers per host and service
 When the client requests hosts and services create containers
 For example:
- # javascript requested hosts and saved them in $host
- for i in $host 
- # <put divs with id="$host">
+
+```perl
+# javascript requested hosts and saved them in $host
+for i in $host 
+# <put divs with id="$host">
+```
 
 And then
- # javascript has requested services for a host and stored it in $service
- for i in $services
- # <put divs with id="$host $service"> 
+
+```perl
+# javascript has requested services for a host and stored it in $service
+for i in $services
+# <put divs with id="$host $service"> 
+```
 
 ## request data for each service timebased
 Make the request for the state of the service a timebased event.
 This means: 
 - remember the hosts
 - remember the services
-- update the graph at $('#host #service') each time new data came back
-
-
-## Create objects per service/host
-Make js cal   
+- update the graph at `$('#host #service')` each time new data came back
 
 # Core
 
@@ -62,7 +64,7 @@ Here are a few suggestions:
 
 - Nagplot::DataSource::$StockExchange (its fairly flexible designed afterall)
 
-If you\'d like to: Contribute!
+If you'd like to: Contribute!
 
 # Across core and web
 
