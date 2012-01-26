@@ -19,8 +19,6 @@ Nagplot::DataSource::Nagios - Nagios Backend for Nagplot::DataSource
                 pass => 'nagiosadmin',
 		# did you use a HTTP or HTTPS connection to your nagios instance?
                 secure => 0,
-		# the full uri from which to fetch the rrd-files for each host/service
-                rrd_uri => 'http://192.168.200.201/files/'
         }
   }
 
@@ -42,12 +40,15 @@ use warnings;
 use Moose;
 use Mojo::UserAgent;
 use HTML::TableExtract;
+use URI;
+
 
 =head1 Non-Accessible Attributes
 
 =head2 config
 
 B<You cannot change this from nagplot.conf>
+
 $config->{DataSource} of the config hash that is passed from nagplot.
 
 =cut
@@ -147,15 +148,37 @@ sub services {
   my @services;
   foreach my $ts ( $te->tables ) {
     foreach my $row ( $ts->rows ) {
-      push @services,$row->[5];
+      push @services,$row->[1];
     }
   }
-  @services = grep m/^check_/, @services;
+  @services = grep !m/^Description/, @services;
   return @services;
 }
 
 sub query_state {
   my $self = shift;
+  my $host = shift;
+  my $service = shift;
+
+  my $url = $self->build_url();
+  $url .= "/extinfo.cgi?type=2&host=".$host."&service=".$service;
+  my $ua = Mojo::UserAgent->new;
+  my $state = $ua->get($url)->res->dom->at('.stateInfoTable1') or die "ZOMG THIS DIDNT WORK";
+  my $content = $state->to_xml();
+  my $te = HTML::TableExtract->new();
+
+  $te->parse($content);
+  my @services;
+  my @line;
+  foreach my $ts ( $te->tables ) {
+    push  @line,$ts->rows->[1];
+  }
+
+  if ($line[0][1] =~ m/([0-9.]+)/) {
+    return $1;
+  } else {
+    return undef;
+  }
 }
 
 sub build_url{
