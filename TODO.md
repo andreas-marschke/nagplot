@@ -52,7 +52,38 @@ You can have a few ways to implement this:
   Which can be realized in 2 ways _(a)_ force people to host nagplot on the **same**
   machine or _(b)_ make them serve the rrd files openly through some protocol. Be it
   http only or more is a question of implementation.
-  
+
+## Nagplot::DataSource::*
+
+### Make a Base.pm other Plugins can `extent`
+
+This is usefull to get the usual legwork done quickly by simply writing 
+
+```perl
+package Nagplot::DataSource::MyDataSource;
+use Moose;
+extent 'Nagplot::DataSource::Base';
+
+after configure {
+  # . . .
+}
+
+after hosts {
+  # . . .
+}
+
+after services {
+  # . . .
+}
+
+after query_state {
+  # . . .
+}
+
+no Moose;
+1;
+```
+
 ## More example plugins
 Here are a few suggestions:
 
