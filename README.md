@@ -1,5 +1,5 @@
 # nagplot
-> A nicer frontend to nagios performance data graphs
+A nicer frontend to nagios performance data graphs
 
 ## Goal
 
@@ -35,15 +35,15 @@ an instance of Nagios available under the URL http://192.168.200.201/nagios :
 {
   secret => 'nagplot', # the secret your Mojolicious cookies are ecrypted with
   DataSource => {      # root config object for data sources
-        Nagios => {    # a Nagios data source
-                host => '192.168.200.201',
-                cgi_path => '/nagios/cgi-bin',
-                nagios_path => '/nagios',
-                pnp4nagios_path => '/pnp4nagios', 
-                user => 'nagiosadmin', # http-basic-auth user for requesting data
-                pass => 'nagiosadmin', # http-basic-auth password
-                secure => 0            # if you didn't configure it to be available under https use this
-        }
+	Nagios => {    # a Nagios data source
+		host => '192.168.200.201',
+		cgi_path => '/nagios/cgi-bin',
+		nagios_path => '/nagios',
+		user => 'nagiosadmin', # http-basic-auth user for requesting data
+		pass => 'nagiosadmin', # http-basic-auth password
+		date_format => '%m-%d-%Y %T' # date_format from nagios.cfg
+		secure => 0            # if you didn't configure it to be available under https use this
+	}
   }
 };
 </pre>
@@ -61,9 +61,9 @@ For a quick run to see if it works just run: `perl nagplot daemon` and open up a
 Nagplot provides a very easy to use json frontend to the modules. As a frontend/javascript developer 
 you only need to know 3 queries:
 
- - /json/hosts - get all queriable hosts
- - /json/services?host=$value - get all services for a host where $value is the name of the host
- - /json/query_state?host=$host&service=$service - get a value describing the state
+ - `/json/hosts` - get all queriable hosts
+ - `/json/services?host=$value` - get all services for a host where $value is the name of the host
+ - `/json/query_state?host=$host&service=$service` - get a value describing the state
 
 
 ## Implementation
@@ -85,4 +85,5 @@ invest into a new server.
 
 Nagplot is not meant to be something you can copy paste into your documents. 
 It is more or less like a live-broker about your facillities. So if you have a usable
-backend you can plug into it to monitor devices/systems/applications by all means do it.
+backend you can plug into it to monitor devices/systems/applications. If you 
+have suggestions by all means post them.
