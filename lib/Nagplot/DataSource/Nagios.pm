@@ -13,7 +13,6 @@ Nagplot::DataSource::Nagios - Nagios Backend for Nagplot::DataSource
 		# The paths you chose to host your Nagios under (from a webrequest point of view)
                 cgi_path => '/nagios/cgi-bin',
                 nagios_path => '/nagios',
-                pnp4nagios_path => '/pnp4nagios',
 		# the username and password for the http-basic-authentication
                 user => 'nagiosadmin',
                 pass => 'nagiosadmin',
@@ -40,6 +39,8 @@ use warnings;
 use Moose;
 use Mojo::UserAgent;
 use HTML::TableExtract;
+use Data::Dumper;
+use DateTime::Format::Strptime;
 use URI;
 
 
@@ -80,12 +81,6 @@ The path to your Nagios main websites
 =cut
 has 'nagios_path' => ( is => 'rw', isa => 'Str', default => '/nagios', required => 0);
 
-=head2 pnp4nagios_path
-
-The Path to the pnp4nagios installation
-
-=cut
-has 'pnp4nagios_path' => ( is => 'rw', isa => 'Str', default => '/pnp4nagios',required => 0 );
 
 =head2 user,pass
 
@@ -96,6 +91,13 @@ I<Leave both blank if you do not use the http-basic-authentication>
 =cut
 has 'user' => ( is => 'rw', isa => 'Str', default => 'nagplot', required => 0 );
 has 'pass' => ( is => 'rw', isa => 'Str', default => 'nagplot', required => 0 );
+
+=head2 date_format
+
+The B<date_format> used by Nagios. See I<nagios.cfg> for more information.
+
+=cut
+has 'date_format' => ( is => 'rw', isa => 'Str', default => '%m-%d-$Y %Y:%M:%S', required => 0);
 
 =head2 secure
 
@@ -110,9 +112,9 @@ sub BUILD {
   $self->host($params{host})                       unless not defined $params{host};
   $self->cgi_path($params{cgi_path})               unless not defined $params{cgi_path};
   $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_path};
-  $self->pnp4nagios_path($params{pnp4nagios_path}) unless not defined $params{pnp4nagios_path};
   $self->user($params{user})                       unless not defined $params{user};
   $self->pass($params{pass})                       unless not defined $params{pass};
+  $self->date_format($params{date_format})         unless not defined $params{date_format};
   $self->secure($params{secure})                   unless not defined $params{secure};
 }
 
@@ -151,7 +153,9 @@ sub services {
       push @services,$row->[1];
     }
   }
-  @services = grep !m/^Description/, @services;
+  shift @services;
+  @services = grep (!/^Description/, @services);
+  
   return @services;
 }
 
@@ -163,22 +167,35 @@ sub query_state {
   my $url = $self->build_url();
   $url .= "/extinfo.cgi?type=2&host=".$host."&service=".$service;
   my $ua = Mojo::UserAgent->new;
-  my $state = $ua->get($url)->res->dom->at('.stateInfoTable1') or die "ZOMG THIS DIDNT WORK";
+  my $state = $ua->get($url)->res->dom->at('.stateInfoTable1') or return "";
   my $content = $state->to_xml();
   my $te = HTML::TableExtract->new();
 
   $te->parse($content);
-  my @services;
-  my @line;
+  my (@perf_data,@last_check);
   foreach my $ts ( $te->tables ) {
-    push  @line,$ts->rows->[1];
+    push @perf_data,$ts->rows->[2];
   }
+  foreach my $ts ( $te->tables ) {
+    push @last_check,$ts->rows->[4];
+  }
+  my $json = {x => '0', y => '0'};
+  my $text = $perf_data[0][1];
+  $json->{y} = $1 if ($text =~ m/=([0-9\.]+)/); 
+  $json->{x} = $self->parse_date($last_check[0][1]);
+  return $json;
+}
 
-  if ($line[0][1] =~ m/([0-9.]+)/) {
-    return $1;
-  } else {
-    return undef;
-  }
+sub parse_date {
+  my $self = shift;
+  my $date_str = shift;
+  my $date_format = $self->date_format;
+  my $strp = new DateTime::Format::Strptime(pattern => $date_format,
+				    	    on_error => 'croak');
+
+  my $dt = $strp->parse_datetime($date_str);
+  return -$dt->epoch;
+
 }
 
 sub build_url{
