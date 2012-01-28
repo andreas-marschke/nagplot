@@ -17,19 +17,15 @@ get '/web' => sub {
 
 get '/json/:command' => sub {
         my $self = shift;
-	$self->session( x => 1) if not defined $self->session('x');
-	my $x = $self->session('x');
 	my $ds = Nagplot::DataSource->new(config => $config->{DataSource} );
 	if ( $self->stash('command') eq 'hosts' ) {
 		$self->render_json([$ds->hosts]);
 	} elsif ( $self->stash('command') eq 'services' ) {
 		$self->render_json([$ds->services($self->param('host'))]);
 	} elsif ( $self->stash('command') eq 'query_state' ) {
-		$self->render_json({x => $x, y=> $ds->query_state($self->param('host'),$self->param('service'))});
+		$self->render_json($ds->query_state($self->param('host'),$self->param('service')));
 	} else {
-		
 		$self->render_json([]);
 	}
-	$self->session(x => $x++);
 };
 app->start;
