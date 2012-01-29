@@ -34,8 +34,6 @@ our $VERSION = '';
 
 use 5.010_000;
 
-use strict;
-use warnings;
 use Moose;
 use Mojo::UserAgent;
 use HTML::TableExtract;
@@ -54,6 +52,14 @@ $config->{DataSource} of the config hash that is passed from nagplot.
 
 =cut
 has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
+
+=head2 name 
+
+The name the plugin authenticates as. It is important to find the correct part of the
+nested config hash.
+
+=cut
+has 'name' => ( is => 'rw', isa => 'Str', default => 'Nagios');
 
 =head1 Accessible Attributes
 
@@ -108,7 +114,7 @@ has 'secure' => ( is => 'rw', isa => 'Str', default => 1, required => 0);
 
 sub BUILD {
   my $self = shift;
-  my %params  = %{$self->config->{Nagios}};
+  my %params  = %{$self->config->{$self->name}};
   $self->host($params{host})                       unless not defined $params{host};
   $self->cgi_path($params{cgi_path})               unless not defined $params{cgi_path};
   $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_path};
