@@ -58,6 +58,7 @@ to the hashref containing the configuration for the datasource.
 ## in Moose
 
 Here is a small example of how a DataSource might look like written in Moose:
+
 ```perl
 package Nagplot::DataSource::MyMooseDS;
 
@@ -114,9 +115,8 @@ sub query_state {
 no Moose;
 1;
 ```
+
 Again this is only an example. You can return coordinates as you like as long 
 as they consist of the form `{x => numeric_value, y => numeric_value}`.
 
 Have a look at Nagplot::DataSource::Nagios for an example implementation.
-
-
