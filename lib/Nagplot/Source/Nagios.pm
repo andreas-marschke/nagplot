@@ -2,11 +2,11 @@
 
 =head1 NAME
 
-Nagplot::DataSource::Nagios - Nagios Backend for Nagplot::DataSource
+Nagplot::Source::Nagios - Nagios Backend for Nagplot::DataSource
 
 =head1 SYNOPSIS
 
-  DataSource => {
+  DataSources => {
         Nagios => {
 		# The ip or hostname your nagios is hosted
                 host => '192.168.200.201',
@@ -28,7 +28,7 @@ for which Options/Attributes you can set and which values they accept in your I<
 
 =cut
 
-package Nagplot::DataSource::Nagios;
+package Nagplot::Source::Nagios;
 
 our $VERSION = '';
 
@@ -61,9 +61,11 @@ nested config hash.
 =cut
 has 'name' => ( is => 'rw', isa => 'Str', default => 'Nagios');
 
-=head1 Accessible Attributes
+=head1 CONFIGURATION
 
-Any path oriented Objects following here are B<NOT> supposed to have a slash (»/«) at the end but at the beginning.
+The Nagios DataSource handles the communication of nagplot with Nagios hosts. This datasource will
+crawl the webpages of Nagios if it is a seperate host. Therefore it is important to know for the datasource
+where the webinterface is located and how to talk to it.
 
 =head2 host
 
@@ -165,7 +167,7 @@ sub services {
   return @services;
 }
 
-sub query_state {
+sub checkstate {
   my $self = shift;
   my $host = shift;
   my $service = shift;

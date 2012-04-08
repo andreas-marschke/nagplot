@@ -2,15 +2,37 @@
 
 =head1 NAME
 
-Nagplot::DataSource::Dummy - Dummy Backend for Nagplot::DataSource
+Nagplot::Source::Dummy - Dummy Backend for Nagplot::DataSource
+
+=head1 SYNOPSIS
+
+ config => {
+   DataSources => {
+     enabled => [Nagios, Dummy],
+     Dummy => {}
+   }
+ }
 
 =head1 DESCRIPTION
 
-It will create random data to debug the frontend and examples;
+It will create random data to debug the frontend and examples.
+
+=head1 CONFIGURATION
+
+This datasource does not have any configuration options.
+If you want to use it set an empty hash as the config value
+in your nagplot.conf
+
+ config => {
+   DataSources => {
+     enabled => [Nagios, Dummy],
+     Dummy => {}
+   }
+ }
 
 =cut
 
-package Nagplot::DataSource::Dummy;
+package Nagplot::Source::Dummy;
 
 our $VERSION = '';
 
@@ -26,7 +48,7 @@ sub BUILD {
   my $self = shift;
 }
 
-sub hosts { 
+sub hosts {
   my $self = shift;
   return qw/localhost www mail ftp/;
 }
