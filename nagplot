@@ -1,4 +1,65 @@
 #!/usr/bin/env perl
+
+=head1 NAME
+
+nagplot - a nice frontend to Nagios Performance Data
+
+=head1 SYNOPSIS
+
+ # for evaluation
+ ./nagplot daemon
+
+ # see Mojolicious Deployment instructions for
+ # how deploy nagplot on your platform
+
+=head1 DESCRIPTION
+
+nagplot is at the heart of the project it is the server-side part of
+the web application. If you want to start evaluating nagplot simply start
+the webserver from the commandline with:
+
+ nagplot daemon
+
+=head1 CONFIGURATION
+
+You have several configuration options coming with nagplot. There is also an example
+nagplot.conf in the standard distribution tarball. For reference it is laid out here as well:
+
+ {
+   secret => 'nagplot',				# perldoc $(which nagplot)
+   static_root => './public', 			 
+   DataSources => {				# perldoc Nagplot::DataSource
+	Nagios => {                            	# perldoc Nagplot::DataSource::Nagios
+        	host => 'nagios.example.org',
+      		cgi_path => '/nagios/cgi-bin',
+        	nagios_path => '/nagios',
+        	user => 'nagiosadmin',
+         	pass => 'nagiosadmin',
+		date_format => '%m-%d-%Y %H:%M:%S',
+         	secure => 0
+	}
+   }
+ };
+
+=head2 secret
+
+The 'secret' option defines the string with which your cookies will be hashed/encoded. for a full length
+explenation see the Mojolicious documentation at I<perldoc Mojolicious> under ATTRIBUTES.
+
+=head2 static_root
+
+The URI where you'd like to place the static files. 
+
+See I<perldoc Mojolicious::Static>
+
+=head2 DataSources
+
+A hash of subsequent configuration variables for the different DataSources you can use.
+
+see I<perldoc Nagplot::DataSource>
+
+=cut
+
 use Mojolicious::Lite;
 use Nagplot::DataSource;
 use Data::Dumper;
@@ -15,17 +76,27 @@ get '/web' => sub {
   $self->render('start');
 };
 
-get '/json/:command' => sub {
-        my $self = shift;
-	my $ds = Nagplot::DataSource->new(config => $config->{DataSource} );
-	if ( $self->stash('command') eq 'hosts' ) {
-		$self->render_json([$ds->hosts]);
-	} elsif ( $self->stash('command') eq 'services' ) {
-		$self->render_json([$ds->services($self->param('host'))]);
-	} elsif ( $self->stash('command') eq 'query_state' ) {
-		$self->render_json($ds->query_state($self->param('host'),$self->param('service')));
-	} else {
-		$self->render_json([]);
-	}
+get '/json/hosts' => sub {
+  my $self = shift; 
+  my $ds = Nagplot::DataSource->new(config => $config->{DataSources} );
+  $self->render_json([$ds->hosts]);
 };
+
+get '/json/services/:host' => sub {
+  my $self = shift; 
+  my $ds = Nagplot::DataSource->new(config => $config->{DataSources} );
+  $self->render_json([ $ds->services($self->param('host')) ]);
+};
+
+get '/json/checkstate/:host/:service' => sub {
+  my $self = shift; 
+  my $ds = Nagplot::DataSource->new(config => $config->{DataSources} );
+  $self->render_json( $ds->query_state( $self->param( 'host' ), $self->param( 'service' ) ) );
+};
+
+sub bulk () {
+	my ($self) = shift;
+	my $ds = Nagplot::DataSource->new(config => $config->{DataSources});
+}
+
 app->start;
