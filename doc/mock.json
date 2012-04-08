@@ -1,0 +1,62 @@
+/*
+ Mockup for the datastructure of new responses
+*/
+/*
+  /json/bulk
+ */
+{
+    host : [{
+	name : "localhost",
+	services : [{
+	    name : "check_ping",
+	    state : "1.2",
+	    metric : "ms"
+	},{
+	    name : "check_fs",
+	    state : "45.2",
+	    metric : "Mbyte/s"
+	    
+	}]
+    },{
+	name : "example.org",
+	services : [{
+	    name : "check_db",
+	    state : "3",
+	    metric : "Stk."
+	}]
+		
+    }]
+}
+
+/*
+  /json/hosts
+*/
+{
+    hosts : ["localhost", "www.example.org", "smtp.example.org", "imap.example.org"]
+}
+
+/*
+  /json/services/:host
+*/
+
+{
+    services : [
+	"check_fs" : {
+	    state : "2",
+	    metric : "GB"
+	},
+	"check_ping" : {
+	    state : "3.1",
+	    metric : "ms"
+	}
+    ]
+}
+
+/*
+  /json/state/:host/:service
+*/
+
+{
+    state : "32",
+    metric : "bit"
+}
