@@ -20,7 +20,7 @@ The following items describe the URLs from which you can retrieve data and which
 - return: an array of services you can map to the host. 
   Example: ```["check_http","check_ftp","check_ping"]```
 
-### /json/query_state?host=$host&services=$service
+### /json/checkstate?host=$host&services=$service
 
 - description: a coordinate for the service data
 - params:
