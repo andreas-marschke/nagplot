@@ -69,7 +69,7 @@ sub services {
   }
 }
 
-sub query_state {
+sub state {
   my $self = shift;
   return rand(100);
 }

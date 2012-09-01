@@ -18,6 +18,7 @@ Nagplot::Source::Nagios - Nagios Backend for Nagplot::DataSource
                 pass => 'nagiosadmin',
 		# did you use a HTTP or HTTPS connection to your nagios instance?
                 secure => 0,
+                date_format => '%m-%d-$Y %Y:%M:%S'
         }
   }
 
@@ -40,7 +41,7 @@ use HTML::TableExtract;
 use Data::Dumper;
 use DateTime::Format::Strptime;
 use URI;
-
+use Carp;
 
 =head1 Non-Accessible Attributes
 
@@ -167,7 +168,7 @@ sub services {
   return @services;
 }
 
-sub checkstate {
+sub state {
   my $self = shift;
   my $host = shift;
   my $service = shift;
@@ -197,12 +198,11 @@ sub checkstate {
 sub parse_date {
   my $self = shift;
   my $date_str = shift;
-  my $date_format = $self->date_format;
-  my $strp = new DateTime::Format::Strptime(pattern => $date_format,
+  my $strp = new DateTime::Format::Strptime(pattern => $self->date_format,
 				    	    on_error => 'croak');
 
   my $dt = $strp->parse_datetime($date_str);
-  return -$dt->epoch;
+  return $dt->epoch;
 
 }
 
