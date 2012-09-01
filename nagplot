@@ -66,6 +66,7 @@ use Data::Dumper;
 
 my $config = plugin 'Config';
 app->secret($config->{secret});
+
 get '/' => sub {
   my $self = shift;
   $self->redirect_to('/web');
@@ -79,24 +80,27 @@ get '/web' => sub {
 get '/json/hosts' => sub {
   my $self = shift; 
   my $ds = Nagplot::DataSource->new(config => $config->{DataSources} );
-  $self->render_json([$ds->hosts]);
+
+  $self->render_json([
+    { name => 'localhost'},
+    { name => 'google'},
+    { name => 'ccc.de'}]);
 };
 
 get '/json/services/:host' => sub {
   my $self = shift; 
   my $ds = Nagplot::DataSource->new(config => $config->{DataSources} );
-  $self->render_json([ $ds->services($self->param('host')) ]);
+  $self->render_json([
+    {name => 'check_cpu', type => 'line'},
+    {name => 'check_mem', type => 'line'},
+    {name => 'check_users', type => 'line'},
+   ]);
 };
 
-get '/json/checkstate/:host/:service' => sub {
-  my $self = shift; 
+get '/json/state/:host/:service' => sub {
+  my $self = shift;
   my $ds = Nagplot::DataSource->new(config => $config->{DataSources} );
-  $self->render_json( $ds->query_state( $self->param( 'host' ), $self->param( 'service' ) ) );
+  $self->render_json({x => 1, y=> 10});
 };
-
-sub bulk () {
-	my ($self) = shift;
-	my $ds = Nagplot::DataSource->new(config => $config->{DataSources});
-}
 
 app->start;
