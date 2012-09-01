@@ -1,0 +1,11 @@
+<span class="statistics">
+<% console.log(foo); %>
+  Currently monitored assets: <b><%= collection.length %></b>
+</span>
+<ul class="hosts">
+  <% _.each(collection, function(host) {%>
+  <li>
+    <%= host.get('name') %>
+  </li>
+  <% }); %>
+</ul>
