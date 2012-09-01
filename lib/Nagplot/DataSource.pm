@@ -79,20 +79,17 @@ use strict;
 use warnings;
 use Moose;
 use Module::Pluggable::Object;
-use Nagplot::DataSource::Cache;
 use Data::Dumper;
 
 has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
 has 'datasources' => ( is => 'rw' , isa => 'ArrayRef[Str]');
 has 'finder' => (is => 'rw' , isa => 'Object');
-has 'cache' => ( is => 'rw' , isa => 'Object');
 
 # setup plugins and finder
 sub BUILD {
   my $self = shift;
 
   $self->datasources($self->config->{enabled});
-  $self->cache(Nagplot::DataSource::Cache->new());
 }
 
 =head1 Nagplot::Source DEVELOPER DOCUMENTATION
@@ -109,13 +106,11 @@ sub hosts {
   my $self = shift;
   my @hosts;
 
-  # get the list of hosts from the sources and add them to the cache
-  # but only if we know the datasource is available to us
   foreach my $source (@{$self->datasources}) {
-    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::DataSources',
+    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Source',
 						instantiate => 'new',
-						only => $source);
-    foreach my $datasource ($finder->plugins(config => $self->config)) {
+						only => "Nagplot::Source::".$source);
+    foreach my $datasource ($finder->plugins(config => $self->config())) {
       push @hosts,$datasource->hosts();
     }
   }
@@ -134,28 +129,21 @@ sub services {
   my $host = shift;
   my @services;
 
-  if ($self->cache->where_is('service',$host)) {
-    return keys $self->cache->services();
-  }
-
   # get the list of hosts from the sources and add them to the cache
   # but only if we know the datasource is available to us
   foreach my $source (@{$self->datasources}) {
-    $self->finder->{only} = $source;
-    foreach my $datasource ($self->finder->plugins) {
-
+    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Source',
+						instantiate => 'new',
+						only => "Nagplot::Source::".$source);
+    foreach my $datasource ($finder->plugins(config => $self->config())) {
       my @service_by_source = $datasource->services($host);
       push (@services,@service_by_source);
-
-      foreach (@service_by_source) {
-	$self->cache->add_service($host,$_,$datasource);
-      }
     }
   }
   return @services;
 }
 
-=head2 checkstate($host, $service)
+=head2 state($host, $service)
 
 Takes the parameters $host and $service where $service is the name of the service provided
 by $host and returns it's value as a scalar value. Return 0 if no value is possible 
@@ -163,21 +151,27 @@ to retrieve.
 
 =cut
 
-sub checkstate {
+sub state {
   my $self = shift;
   my $host = shift;
   my $service = shift;
   my $state;
 
   foreach my $source (@{$self->datasources}) {
-    my $datasource = $self->finder->{only} = $source;
-    foreach my $datasource ($self->finder->plugins) {
-      $datasource->checkstate($host, $service);
+    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Source',
+						instantiate => 'new',
+						only => "Nagplot::Source::".$source);
+    foreach my $datasource ($finder->plugins(config => $self->config())) {
+      $state = $datasource->state($host, $service);
     }
   }
-
   return $state;
 }
 
 no Moose;
 1;
+
+
+
+
+
