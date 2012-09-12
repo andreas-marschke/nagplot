@@ -1,0 +1,8 @@
+% layout 'default';
+% title 'Dashboard';
+<h1>Dashboard </h1>
+
+<div> 
+	<p> Welcome you will find your most important data on this page.</p>
+	<p> Feel free to browse the links.</p>
+</div>

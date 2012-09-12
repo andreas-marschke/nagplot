@@ -2,34 +2,13 @@
 
 =head1 NAME
 
-Nagplot::Source::Nagios - Nagios Backend for Nagplot::DataSource
-
-=head1 SYNOPSIS
-
-  DataSources => {
-        Nagios => {
-		# The ip or hostname your nagios is hosted
-                host => '192.168.200.201',
-		# The paths you chose to host your Nagios under (from a webrequest point of view)
-                cgi_path => '/nagios/cgi-bin',
-                nagios_path => '/nagios',
-		# the username and password for the http-basic-authentication
-                user => 'nagiosadmin',
-                pass => 'nagiosadmin',
-		# did you use a HTTP or HTTPS connection to your nagios instance?
-                secure => 0,
-                date_format => '%m-%d-$Y %Y:%M:%S'
-        }
-  }
+Nagplot::Core::Source::Nagios - Nagios Source
 
 =head1 DESCRIPTION
 
-This plugin will allow you to query Nagios for performance data. See the documentation in this file
-for which Options/Attributes you can set and which values they accept in your I<nagplot.conf>.
-
 =cut
 
-package Nagplot::Source::Nagios;
+package Nagplot::Core::Source::Nagios;
 
 our $VERSION = '';
 
@@ -39,28 +18,16 @@ use Moose;
 use Mojo::UserAgent;
 use HTML::TableExtract;
 use Data::Dumper;
-use DateTime::Format::Strptime;
+use DateTime;
 use URI;
 use Carp;
+use DateTime::Format::Strptime;
+use Nagplot::Core::Types::Host;
+use Nagplot::Core::Types::Service;
+use Nagplot::Core::Types::State;
 
-=head1 Non-Accessible Attributes
 
-=head2 config
-
-B<You cannot change this from nagplot.conf>
-
-$config->{DataSource} of the config hash that is passed from nagplot.
-
-=cut
-has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
-
-=head2 name 
-
-The name the plugin authenticates as. It is important to find the correct part of the
-nested config hash.
-
-=cut
-has 'name' => ( is => 'rw', isa => 'Str', default => 'Nagios');
+extends 'Nagplot::Core::Source::Meta';
 
 =head1 CONFIGURATION
 
@@ -90,6 +57,12 @@ The path to your Nagios main websites
 =cut
 has 'nagios_path' => ( is => 'rw', isa => 'Str', default => '/nagios', required => 0);
 
+=head2 log
+
+Object for managing the logging for the application
+
+=cut
+has 'log' => ( is => 'rw', isa => 'Ref', required => 1);
 
 =head2 user,pass
 
@@ -117,7 +90,7 @@ has 'secure' => ( is => 'rw', isa => 'Str', default => 1, required => 0);
 
 sub BUILD {
   my $self = shift;
-  my %params  = %{$self->config->{$self->name}};
+  my %params  = %{$self->config->{Sources}->{Nagios}};
   $self->host($params{host})                       unless not defined $params{host};
   $self->cgi_path($params{cgi_path})               unless not defined $params{cgi_path};
   $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_path};
@@ -129,6 +102,7 @@ sub BUILD {
 
 sub hosts { 
   my $self = shift;
+
   my $ua = Mojo::UserAgent->new;
   my $url = $self->build_url();
   $url .= "/config.cgi?type=hosts";
@@ -136,13 +110,22 @@ sub hosts {
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
-  my @hosts;
+  my @rows;
   foreach my $ts ( $te->tables ) {
     foreach my $row ( $ts->rows ) {
-      push @hosts,$row->[1];
+      push @rows, $row;
     }
   }
-  shift @hosts;
+  shift @rows; # first row is the header
+  my @hosts;
+  foreach (@rows) {
+    push @hosts, Nagplot::Core::Types::Host->new(
+      metadata => { description => $_->[1],
+		    parent => $_->[3]
+		  },
+      ip => $_->[2],
+      name => $_->[0]);;
+  }
   return @hosts;
 }
 
@@ -151,20 +134,27 @@ sub services {
   my $host = shift;
   my $ua = Mojo::UserAgent->new;
   my $url = $self->build_url();
-  $url .= "/config.cgi?type=services&expand=".$host;
+  $url .= "/config.cgi?type=services";
   my $div = $ua->get($url)->res->dom->at('.data') or return "";
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
-  my @services;
+  my @rows;
   foreach my $ts ( $te->tables ) {
     foreach my $row ( $ts->rows ) {
-      push @services,$row->[1];
+      push @rows,$row;
     }
   }
-  shift @services;
-  @services = grep (!/^Description/, @services);
-  
+  shift @rows;
+  shift @rows;
+  my @services;
+  foreach (@rows) {
+    next unless ($_->[0] eq $host);
+    push @services,Nagplot::Core::Types::Service->new(
+      metadata => { description => $_->[1] },
+      name => $_->[5]
+     );
+  }
   return @services;
 }
 
@@ -172,15 +162,14 @@ sub state {
   my $self = shift;
   my $host = shift;
   my $service = shift;
-
   my $url = $self->build_url();
   $url .= "/extinfo.cgi?type=2&host=".$host."&service=".$service;
   my $ua = Mojo::UserAgent->new;
   my $state = $ua->get($url)->res->dom->at('.stateInfoTable1') or return "";
   my $content = $state->to_xml();
   my $te = HTML::TableExtract->new();
-
   $te->parse($content);
+  $self->log->warn($content);
   my (@perf_data,@last_check);
   foreach my $ts ( $te->tables ) {
     push @perf_data,$ts->rows->[2];
@@ -191,8 +180,9 @@ sub state {
   my $json = {x => '0', y => '0'};
   my $text = $perf_data[0][1];
   $json->{y} = $1 if ($text =~ m/=([0-9\.]+)/); 
-  $json->{x} = $self->parse_date($last_check[0][1]);
-  return $json;
+  $json->{x} = DateTime->now->epoch();
+  $self->log->debug(Nagplot::Core::Types::State->new(data => $json));
+  return Nagplot::Core::Types::State->new(data => $json);
 }
 
 sub parse_date {
@@ -211,7 +201,7 @@ sub build_url{
   my $url;
   $url .= "https://" if $self->secure;
   $url .= "http://" if not $self->secure;
-  $url .= $self->user.":".$self->pass."@";
+  $url .= $self->user.":".$self->pass."@" unless $self->user eq '';
   $url .= $self->host;
   $url .= "/".$self->cgi_path;
   return $url;
