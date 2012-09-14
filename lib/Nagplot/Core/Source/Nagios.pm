@@ -151,8 +151,8 @@ sub services {
   foreach (@rows) {
     next unless ($_->[0] eq $host);
     push @services,Nagplot::Core::Types::Service->new(
-      metadata => { description => $_->[1] },
-      name => $_->[5]
+      metadata => { command => $_->[5] },
+      name => $_->[1]
      );
   }
   return @services;
