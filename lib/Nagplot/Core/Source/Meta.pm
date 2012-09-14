@@ -39,7 +39,11 @@ The name the plugin authenticates as. It is important to find the correct part o
 nested config hash.
 
 =cut
-has 'name' => ( is => 'rw', isa => 'Str', default => 'Nagios', lazy => 1);
+has 'name' => ( is => 'rw' , isa => 'Str', default => sub {
+		  my $self = shift;
+		  my @name = split(/::/,$self->meta->name);
+		  return $name[-1];
+		});
 
 =head1 hosts
 
