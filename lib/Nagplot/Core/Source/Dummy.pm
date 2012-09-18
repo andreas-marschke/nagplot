@@ -81,9 +81,10 @@ sub services {
     my $check =  $foo->randregex('[a-z0-9]{6}');
 
     push @services,Nagplot::Core::Types::Service->new(
-      metadata => { description => 'Marginally interesting data' },
+      metadata => { description => 'Marginally interesting data',
+		    metric => $metrics[int(rand(9))]
+		  },
       name => "check_".$check,
-      metric => $metrics[int(rand(9))],
       color => $color[int(rand(6))]
      );
   }

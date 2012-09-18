@@ -6,6 +6,18 @@ Nagplot::Core::Source::Nagios - Nagios Source
 
 =head1 DESCRIPTION
 
+The Nagios Source is basically a webscraper for Nagios. Performance data per service is taken as metric data for
+generating states. Services and hosts in Nagios are determined by
+http://nagiosdomain.tld/your/path/to/nagios/cgi-bin/config.cgi?type=hosts and /config.cgi?type=services.
+
+=head2 COMPATIBILITY
+
+This source is compatible with Nagios versions
+  2.x
+  3.x
+Icinga Classic Versions:
+  1.x
+
 =cut
 
 package Nagplot::Core::Source::Nagios;
@@ -25,7 +37,7 @@ use DateTime::Format::Strptime;
 use Nagplot::Core::Types::Host;
 use Nagplot::Core::Types::Service;
 use Nagplot::Core::Types::State;
-
+use Nagplot::Core::Types::Error;
 
 extends 'Nagplot::Core::Source::Meta';
 
@@ -90,7 +102,7 @@ has 'secure' => ( is => 'rw', isa => 'Str', default => 1, required => 0);
 
 sub BUILD {
   my $self = shift;
-  my %params  = %{$self->config->{Sources}->{Nagios}};
+  my %params  = %{$self->config};
   $self->host($params{host})                       unless not defined $params{host};
   $self->cgi_path($params{cgi_path})               unless not defined $params{cgi_path};
   $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_path};
@@ -100,13 +112,13 @@ sub BUILD {
   $self->secure($params{secure})                   unless not defined $params{secure};
 }
 
-sub hosts { 
+sub hosts {
   my $self = shift;
-
   my $ua = Mojo::UserAgent->new;
   my $url = $self->build_url();
   $url .= "/config.cgi?type=hosts";
-  my $div = $ua->get($url)->res->dom->at('.data') or return "";
+  my $res = $ua->get($url)->res;
+  my $div = $res->dom->at('.data');
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
@@ -119,12 +131,15 @@ sub hosts {
   shift @rows; # first row is the header
   my @hosts;
   foreach (@rows) {
-    push @hosts, Nagplot::Core::Types::Host->new(
+        push @hosts, Nagplot::Core::Types::Host->new(
       metadata => { description => $_->[1],
 		    parent => $_->[3]
 		  },
       ip => $_->[2],
-      name => $_->[0]);;
+      name => $_->[0],
+      provider => $self->name
+     );
+
   }
   return @hosts;
 }
@@ -145,7 +160,6 @@ sub services {
       push @rows,$row;
     }
   }
-  shift @rows;
   shift @rows;
   my @services;
   foreach (@rows) {
@@ -169,7 +183,6 @@ sub state {
   my $content = $state->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
-  $self->log->warn($content);
   my (@perf_data,@last_check);
   foreach my $ts ( $te->tables ) {
     push @perf_data,$ts->rows->[2];
@@ -181,7 +194,6 @@ sub state {
   my $text = $perf_data[0][1];
   $json->{y} = $1 if ($text =~ m/=([0-9\.]+)/); 
   $json->{x} = DateTime->now->epoch();
-  $self->log->debug(Nagplot::Core::Types::State->new(data => $json));
   return Nagplot::Core::Types::State->new(data => $json);
 }
 
@@ -209,3 +221,9 @@ sub build_url{
 
 no Moose;
 1;
+
+
+
+
+
+

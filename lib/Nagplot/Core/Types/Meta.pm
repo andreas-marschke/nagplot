@@ -27,7 +27,7 @@ use MooseX::Storage;
 
 with Storage('format' => 'JSON');
 
-has 'metadata' => ( is => 'rw' , isa => 'HashRef[Str]', required => 0);
+has 'metadata' => ( is => 'rw' , isa => 'HashRef[Any]', required => 0);
 
 =head2 type
 
@@ -39,6 +39,18 @@ has 'type' => ( is => 'rw' , isa => 'Str', default => sub {
 		  my @name = split(/::/,$self->meta->name);
 		  return $name[-1];
 		});
+
+=head2 provider
+
+Informs client about which instance returns this particular object.
+
+This is important at the point where you are hosting/monitoring more than one instance of the same type of
+Source. For example multiple Nagios Instances for multiple clients in multiple facillities.
+
+=cut
+
+has 'provider' => ( is => 'rw' , isa => 'Str');
+
 no Moose;
 1;
 
