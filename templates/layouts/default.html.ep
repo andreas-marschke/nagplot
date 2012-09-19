@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
-  <head><title><%= title %></title></head>
-  <body><%= content %>
-    
-
+<head>
+  <title><%= title %></title>
+</head>
+  <body>
+    <%= content %>
     <script type="text/javascript" src="js/vendor/base64.js"></script>
     <script type="text/javascript" src="js/vendor/jquery.js"></script>
     <script type="text/javascript" src="js/vendor/underscore.js"></script>
