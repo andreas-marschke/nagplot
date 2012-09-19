@@ -27,20 +27,21 @@ use Nagplot::Core::Types::Error;
 
 has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
 has 'log' => ( is => 'rw', isa => 'Ref', required => 1);
+has 'provider' => ( is => 'rw' , isa => 'Str');
 
 sub hosts {
   my $self = shift;
   my @hosts;
 
   foreach my $source (@{$self->config->{Sources}->{enabled}}) {
-    my $plugin = $self->config->{Sources}->{$source};
-    if (not defined $plugin) {
+    my $source_config = $self->config->{Sources}->{$source};
+    if (not defined $source_config) {
       return Nagplot::Core::Types::Error->new(response => 'ErrSourceNotFound', 
 					      message => "Source ".$source." is not defined in your configuration");
     }
     my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Core::Source',
 						instantiate => 'new',
-						only => $plugin->{Plugin});
+						only => $source_config->{Plugin});
 
     my @datasource = $finder->plugins(config => $self->config->{Sources}->{$source},
 				      log => $self->log,
@@ -54,31 +55,45 @@ sub hosts {
 sub services {
   my $self = shift;
   my $host = shift;
-  my @services;
 
-  foreach my $source (@{$self->config->{Sources}->{enabled}}) {
-    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Core::Source',
-						instantiate => 'new',
-						only => "Nagplot::Core::Source::".$source);
-    foreach my $datasource ($finder->plugins(config => $self->config(), log => $self->log)) {
-      my @services = $datasource->services($host);
-      return @services if  not @services == 0;
-    }
+  if (not defined $self->provider) {
+    return Nagplot::Core::Types::Error->new(response => 'ErrProviderUndef', message => "Provider is undefined");
   }
+
+  my $source_config = $self->config->{Sources}->{$self->provider};
+
+  if (not defined $source_config) {
+    return Nagplot::Core::Types::Error->new(response => 'ErrNoConfigFound', message => "Could not find config for ".$self->provider);
+  }
+
+  my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Core::Source', instantiate => 'new',  only => $source_config->{Plugin});
+
+  my @datasource = $finder->plugins(config => $source_config,
+				    log => $self->log,
+				    name => $self->provider
+				   );
+
+  return $datasource[0]->services($host);
+
 }
 
 sub state {
-    my $self = shift;
-    my ($host,$service) = @_;
+  my $self = shift;
+  my ($host,$service) = @_;
 
-    foreach my $source (@{$self->config->{Sources}->{enabled}}) {
-    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Core::Source',
-						instantiate => 'new',
-						only => "Nagplot::Core::Source::".$source);
-    foreach my $datasource ($finder->plugins(config => $self->config(), log => $self->log) ) {
-      return $datasource->state($host,$service);
-    }
+  if (not defined $self->provider) {
+    return Nagplot::Core::Types::Error->new(response => 'ErrProviderUndef', message => "Provider is undefined");
   }
+
+  my $source_config = $self->config->{Sources}->{$self->provider};
+
+  my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Core::Source',
+					      instantiate => 'new',
+					      only => $source_config->{Plugin});
+
+  my @datasource = $finder->plugins(config => $source_config, log => $self->log, name => $self->provider);
+
+  return $datasource[0]->state($host,$service);
 }
 
 no Moose;

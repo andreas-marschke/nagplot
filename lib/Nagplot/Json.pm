@@ -9,7 +9,8 @@ use Data::Dumper;
 sub hosts {
   my $self = shift;
   my $json = Nagplot::Json::Util->new(log => $self->app->log);
-  my $source = Nagplot::Core::Source->new(config => $self->config, log => $self->app->log());
+  my $source = Nagplot::Core::Source->new(config => $self->config,
+					  log => $self->app->log());
 
   my @array;
   foreach ($source->hosts()) {
@@ -21,7 +22,9 @@ sub hosts {
 sub services{
   my $self = shift;
   my $json = Nagplot::Json::Util->new(log => $self->app->log);
-  my $source = Nagplot::Core::Source->new(config => $self->config, log => $self->app->log);
+  my $source = Nagplot::Core::Source->new(provider => $self->stash('provider'),
+					  config => $self->config,
+					  log => $self->app->log);
 
   my @array;
   foreach ($source->services($self->stash('host'))) {
@@ -33,7 +36,9 @@ sub services{
 sub state {
   my $self = shift;
   my $json = Nagplot::Json::Util->new(log => $self->app->log);
-  my $source = Nagplot::Core::Source->new(config => $self->config, log => $self->app->log);
+  my $source = Nagplot::Core::Source->new(provider => $self->stash('provider'),
+					  config => $self->config,
+					  log => $self->app->log);
 
   my $state = $source->state(
     $self->stash('host'),
