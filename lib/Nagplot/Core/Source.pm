@@ -39,7 +39,8 @@ sub hosts {
       return Nagplot::Core::Types::Error->new(response => 'ErrSourceNotFound', 
 					      message => "Source ".$source." is not defined in your configuration");
     }
-    my $finder = Module::Pluggable::Object->new(search_path => 'Nagplot::Core::Source',
+
+    my $finder = Module::Pluggable::Object->new(search_path => "Nagplot::Core::Source",
 						instantiate => 'new',
 						only => $source_config->{Plugin});
 

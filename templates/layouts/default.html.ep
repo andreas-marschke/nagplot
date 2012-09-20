@@ -2,14 +2,9 @@
 <html>
 <head>
   <title><%= title %></title>
+   <script data-main="js/init.js" src="js/vendor/require.js"></script>
 </head>
   <body>
     <%= content %>
-    <script type="text/javascript" src="js/vendor/base64.js"></script>
-    <script type="text/javascript" src="js/vendor/jquery.js"></script>
-    <script type="text/javascript" src="js/vendor/underscore.js"></script>
-    <script type="text/javascript" src="js/vendor/backbone.js"></script>
-    <script type="text/javascript" src="js/vendor/rickshaw.js"></script>
-    <script type="text/javascript" src="js/lib/nagplot.js"></script>
   </body>
 </html>
