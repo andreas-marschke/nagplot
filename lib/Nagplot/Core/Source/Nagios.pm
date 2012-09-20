@@ -118,7 +118,21 @@ sub hosts {
   my $url = $self->build_url();
   $url .= "/config.cgi?type=hosts";
   my $res = $ua->get($url)->res;
+  if (defined $res->error) {
+    return
+      Nagplot::Core::Types::Error->new(response => 'ConnectionFailed',
+				       message => 'Connection the host: '.$self->host." could not be established",
+				       metadata => {
+					 error => $res->error
+					});
+  }
+
   my $div = $res->dom->at('.data');
+  if (not defined $div) {
+    return Nagplot::Core::Types::Error->new(response => 'DOMParseFailed',
+	   message => 'Response form the server at URL: '.$url." did not contain expected content");
+  }
+
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
@@ -131,7 +145,8 @@ sub hosts {
   shift @rows; # first row is the header
   my @hosts;
   foreach (@rows) {
-        push @hosts, Nagplot::Core::Types::Host->new(
+    chomp($_->[3]);
+    push @hosts, Nagplot::Core::Types::Host->new(
       metadata => { description => $_->[1],
 		    parent => $_->[3]
 		  },
@@ -150,7 +165,22 @@ sub services {
   my $ua = Mojo::UserAgent->new;
   my $url = $self->build_url();
   $url .= "/config.cgi?type=services";
-  my $div = $ua->get($url)->res->dom->at('.data') or return "";
+  my $res = $ua->get($url)->res;
+  if (defined $res->error) {
+    return
+      Nagplot::Core::Types::Error->new(response => 'ConnectionFailed',
+				       message => 'Connection the host: '.$self->host." could not be established",
+				       metadata => {
+					 error => $res->error
+					});
+  }
+
+  my $div = $res->dom->at('.data');
+  if (not defined $div) {
+    return Nagplot::Core::Types::Error->new(response => 'DOMParseFailed',
+					    message => 'Response form the server at URL: '.$url." did not contain expected content");
+  }
+
   my $content = $div->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
@@ -179,7 +209,21 @@ sub state {
   my $url = $self->build_url();
   $url .= "/extinfo.cgi?type=2&host=".$host."&service=".$service;
   my $ua = Mojo::UserAgent->new;
-  my $state = $ua->get($url)->res->dom->at('.stateInfoTable1') or return "";
+  my $res = $ua->get($url)->res;
+  if (defined $res->error) {
+    return
+      Nagplot::Core::Types::Error->new(response => 'ConnectionFailed',
+				       message => 'Connection the host: '.$self->host." could not be established",
+				       metadata => {
+					 error => $res->error
+					});
+  }
+
+  my $state = $res->dom->at('.stateInfoTable1');
+  if (not defined $state) {
+    return Nagplot::Core::Types::Error->new(response => 'DOMParseFailed',
+					    message => 'Response form the server at URL: '.$url." did not contain expected content");
+  }
   my $content = $state->to_xml();
   my $te = HTML::TableExtract->new();
   $te->parse($content);
@@ -197,16 +241,6 @@ sub state {
   return Nagplot::Core::Types::State->new(data => $json);
 }
 
-sub parse_date {
-  my $self = shift;
-  my $date_str = shift;
-  my $strp = new DateTime::Format::Strptime(pattern => $self->date_format,
-				    	    on_error => 'croak');
-
-  my $dt = $strp->parse_datetime($date_str);
-  return $dt->epoch;
-
-}
 
 sub build_url{
   my $self = shift;
