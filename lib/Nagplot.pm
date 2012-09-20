@@ -1,12 +1,22 @@
 package Nagplot;
 use Mojo::Base 'Mojolicious';
 use Data::Dumper;
+use Module::Pluggable::Object;
+
 # This method will run once at server start
 sub startup {
   my $self = shift;
   $self->plugin('Config');
   $self->mode($self->config->{mode}) unless !defined $self->config->{mode};
   $self->secret($self->config->{secret}) unless !$self->config->{secret};
+
+  # Sanity check config values
+  foreach (@{$self->config->{Sources}->{enabled}}) {
+    if (not defined $self->config->{Sources}->{$_}) {
+      $self->log->error("Error: ".$_." is not defined in Sources configuration");
+    }
+  }
+  
   # Router
   my $r = $self->routes;
 
