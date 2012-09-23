@@ -32,5 +32,7 @@ sub BUILD{
   my $self = shift;
   $self->type('Error');
 }
+
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

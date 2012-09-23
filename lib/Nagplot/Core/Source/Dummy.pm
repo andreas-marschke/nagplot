@@ -100,6 +100,6 @@ sub state {
       y => DateTime->now()->epoch()
    });
 }
-
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

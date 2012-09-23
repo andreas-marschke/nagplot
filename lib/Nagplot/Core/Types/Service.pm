@@ -37,6 +37,7 @@ has 'renderer' => ( is => 'rw' , isa => 'Str');
 
 #has 'collection' => ( is => 'rw' , isa => 'ArrayRef[HashRef[Int]]');
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
 

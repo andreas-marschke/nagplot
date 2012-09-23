@@ -97,6 +97,7 @@ sub state {
   return $datasource[0]->state($host,$service);
 }
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
 

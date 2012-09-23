@@ -7,4 +7,5 @@ sub dashboard {
   $self->render();
 }
 
+no Moose;
 1;

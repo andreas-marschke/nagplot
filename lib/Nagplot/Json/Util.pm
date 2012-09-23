@@ -46,5 +46,6 @@ sub sanitize {
   return $unfrozen;
 }
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

@@ -51,6 +51,7 @@ Source. For example multiple Nagios Instances for multiple clients in multiple f
 
 has 'provider' => ( is => 'rw' , isa => 'Str');
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
 

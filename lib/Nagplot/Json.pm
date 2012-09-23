@@ -1,6 +1,5 @@
 package Nagplot::Json;
 use Mojo::Base 'Mojolicious::Controller';
-use Moose;
 
 use Nagplot::Json::Util;
 use Nagplot::Core::Source;
@@ -47,5 +46,5 @@ sub state {
   $self->render_json($sane);
 }
 
-no Moose;
+#__PACKAGE__->meta->make_immutable;
 1;

@@ -32,5 +32,6 @@ sub BUILD{
 
 has 'data' => ( is => 'rw' , isa => 'HashRef[Num]');
 
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;

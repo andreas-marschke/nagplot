@@ -252,7 +252,7 @@ sub build_url{
   $url .= "/".$self->cgi_path;
   return $url;
 }
-
+__PACKAGE__->meta->make_immutable;
 no Moose;
 1;
 
