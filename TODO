@@ -1,0 +1,13 @@
+ * Create Nagplot::Core::Types superset
+   This superset could ease creating Nagplot::Core::Types::* like
+   objects since their Signature is mostly the same.
+
+   Example calling convention could be:
+
+   my $error = Nagplot::Core::Type->new('Error',
+      { response => 'foo',
+        message => 'bar', 
+        metadata => {
+          debug => Dumper($self)
+        }
+      });
