@@ -45,9 +45,12 @@ require.config({
 });	      
 
 require([
-    'collections/hosts'
-], function( Hosts ) {
+    'collections/hosts',
+    'views/hostsview'
+], function( Hosts, HostsView ) {
     var myHosts = new Hosts();
+    window.hostsView  = new HostsView({collection: myHosts, el: $('#root')});
+    myHosts.fetch();
 });
 
 
