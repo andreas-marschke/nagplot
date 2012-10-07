@@ -2,7 +2,9 @@
 <html>
 <head>
   <title><%= title %></title>
-   <script data-main="js/init.js" src="js/vendor/require.js"></script>
+  %= stylesheet 'css/reset.css'
+  %= stylesheet 'css/style.css'
+  <script data-main="js/init.js" src="js/vendor/require.js"></script>
 </head>
   <body>
     <%= content %>
