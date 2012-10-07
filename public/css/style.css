@@ -1,0 +1,60 @@
+/* ============================== */
+/* ! Layout for desktop version   */
+/* ============================== */
+
+body {
+    
+}
+
+#hosts-list {
+
+}
+
+.element {
+    display: inline-table;
+    width: 100px;
+    height: 2em;
+    background: #aaa;
+    padding: 10px 10px 10px 10px;
+    margin: 10px 10px 10px 10px;
+}
+
+.ip { 
+    font-size: 0.7em;
+    font-family: monospace;
+    color: #22222;
+}
+
+a.host-link {
+    color: black;
+    text-decoration: none;
+}
+
+/* ============================= */
+/* ! Layout for mobile version   */
+/* ============================= */
+
+@media handheld, only screen and (max-width: 767px) {
+
+	body {
+		
+	}
+
+}
+
+
+/* ========================================== */
+/* ! Provide higher res assets for iPhone 4   */
+/* ========================================== */
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) { 
+
+/*
+	.logo {
+		background: url(logo2x.jpg) no-repeat;
+		background-size: 212px 303px;
+	}
+*/
+
+}
+
