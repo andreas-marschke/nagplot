@@ -45,12 +45,18 @@ require.config({
 });	      
 
 require([
-    'collections/hosts',
-    'views/hostsview'
-], function( Hosts, HostsView ) {
-    var myHosts = new Hosts();
-    window.hostsView  = new HostsView({collection: myHosts, el: $('#root')});
-    myHosts.fetch();
+    'collections/hosts'
+], function( Hosts ) {
+    var hosts = new Hosts();
+    hosts.fetch({success: function(){
+	var host = hosts.at(0);
+	var services = host.get('Services');
+	services.fetch({success: function() { 
+	    var service = services.at(0);
+	    window.service = service;
+	}});	
+    }});
 });
+
 
 

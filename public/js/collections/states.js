@@ -3,30 +3,32 @@ define([
     'underscore',
     'backbone',
     'models/state'
-], function( $, _, Backbone,State) {
+],function($, _, Backbone, State){
     var States = Backbone.Collection.extend({
-	initialize: function (attributes) {
-	    _.extend(this,Backbone.Events);
-	    this.data = [];
-	    this.service = attributes.service;
-	    this.host = attributes.host;
+	model: State,
+	initialize: function (models, options) { 
+	    this.Service = options.service;
+	    var that = this;
+	    this.Service.bind("change",function() { 
+		that.url = that.makeUrl()
+	    });
 	},
-	url : function () {
-	    return '/json/state/' 
-		+ this.host.get('provider') 
-		+ "/" + this.host.get('name') 
-		+ "/" + this.service.get('name');
-	},
-	fetch : function() {
+	fetch: function (callback) { 
+	    var that = this;
 	    $.ajax({
 		type: 'GET',
-		url: this.url(),
-		success: function(attributes) {
-//		    console.log(attributes);
+		url: this.url,
+		success: function(data) { 
+		    that.add(new State(data));
+		    callback;
 		}
 	    });
 	},
-	toSeries: function () {
+	makeUrl: function() {
+	    return '/json/state'
+		+ '/' + this.Service.get("Host").get("provider") 
+		+ '/' + this.Service.get("Host").get("name")
+		+ '/' + this.Service.get("name")
 	}
     });
     return States;
