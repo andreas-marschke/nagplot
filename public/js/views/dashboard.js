@@ -2,8 +2,9 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'base64',
+    'md5',
     'collections/hosts'
-], function ($, _, Backbone, base64, Hosts) {
+], function ($, _, Backbone, md5, Hosts) {
     
 });
+

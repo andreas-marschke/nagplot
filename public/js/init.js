@@ -2,8 +2,8 @@ require.config({
     // The shim config allows us to configure dependencies for
     // scripts that do not call define() to register a module
     shim: {
-	'base64': {
-	    exports: 'base64'
+	'md5': {
+	    exports: 'md5'
 	},
 	'd3': {
 	    exports: 'd3'
@@ -33,7 +33,7 @@ require.config({
 	}
     },
     paths: {
-	base64: 'vendor/base64',
+	md5: 'vendor/md5',
 	d3: 'vendor/d3',
 	'd3.layout': 'vendor/d3.layout',
 	rickshaw: 'vendor/rickshaw',
