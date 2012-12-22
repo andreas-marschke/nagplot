@@ -46,6 +46,7 @@ sub hosts {
 
     push @hosts,Nagplot::Core::Types::Host->new(
       metadata => { description => 'Marginally interesting data' },
+      provider => $self->name,
       ip => $ip,
       name => $hostname.".".$domain.".".$tld);
   }
@@ -81,6 +82,7 @@ sub services {
     my $check =  $foo->randregex('[a-z0-9]{6}');
 
     push @services,Nagplot::Core::Types::Service->new(
+      provider => $self->name,
       metadata => { description => 'Marginally interesting data',
 		    metric => $metrics[int(rand(9))]
 		  },
