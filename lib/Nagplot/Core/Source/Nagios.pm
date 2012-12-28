@@ -151,7 +151,8 @@ sub hosts {
 		  },
       ip => $_->[2],
       name => $_->[0],
-      provider => $self->name
+      provider => $self->name,
+      services => []
      );
 
   }
