@@ -20,9 +20,8 @@ our $VERSION = '0.1';
 
 use 5.010_000;
 
-use strict;
-use warnings;
 use Moose;
+use Data::Dumper;
 
 =head2 config
 
@@ -45,15 +44,62 @@ has 'name' => ( is => 'rw' , isa => 'Str', default => sub {
 		  return $name[-1];
 		});
 
+=head2 log
+
+Object for managing the logging for the application
+
+=cut
+has 'log' => ( is => 'rw', isa => 'Ref', required => 1);
+
+=head1 init
+
+Initial Batch of data for first visit to the page
+Returned data should be of this form: 
+
+[
+  {
+    provider: "MyProvider",
+    ip: "1.1.1.1",
+    name: "somehost",
+    metadata: { 
+      "your_meta_field_here": "foo bar"
+    },
+    services: [
+      {
+        provider: "Dummy",
+        color: "blue",
+        name: "check_8klxjm",
+        metadata: {
+          metric: "% usage",
+          description: "Marginally interesting data"
+        },
+      }
+    ]
+  }
+]
+
+=cut
+
+sub init {
+  my $self = shift;
+  my @hosts = $self->hosts();
+  foreach (@hosts) {
+    push $_->services,$self->services($_->name);
+  }
+  return @hosts;
+}
+
+
 =head1 hosts
 
-Get Information about the hosts
+Get Information about the hosts.
+
+
 
 =cut
 
 sub hosts {
   my $self = shift;
-
 }
 
 =head1 services

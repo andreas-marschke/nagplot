@@ -25,9 +25,10 @@ sub startup {
   $r->get('/host')->to(controller => 'web', action => 'host');
 
   # Data Routing
+  $r->get('/json/init')->to(controller => 'json', action => 'init');
   $r->get('/json/hosts')->to(controller => 'json', action => 'hosts');
-  $r->get('/json/services/*provider/*host', host=> qr/[^\/]+/)->to(controller => 'json', action => 'services');
-  $r->get('/json/state/*provider/*host/*service', host=> qr/[^\/]+/)->to(controller => 'json', action => 'state');
+  $r->get('/json/services/*provider/*host')->to(controller => 'json', action => 'services');
+  $r->get('/json/state/*provider/*host/*service')->to(controller => 'json', action => 'state');
 
   # Config Routing
   $r->get('/config')->to(controller => 'config', action => 'config');

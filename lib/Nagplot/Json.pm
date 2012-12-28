@@ -5,11 +5,25 @@ use Nagplot::Json::Util;
 use Nagplot::Core::Source;
 use Data::Dumper;
 
+sub init {
+  my $self = shift;
+  my $json = Nagplot::Json::Util->new(log => $self->app->log);
+  my $source = Nagplot::Core::Source->new(config => $self->config,
+					  log => $self->app->log);
+
+  my @array;
+  $self->app->log->info();
+  foreach ($source->init()) {
+    push @array,$json->sanitize($_);
+  }
+  $self->render_json(\@array);
+}
+
 sub hosts {
   my $self = shift;
   my $json = Nagplot::Json::Util->new(log => $self->app->log);
   my $source = Nagplot::Core::Source->new(config => $self->config,
-					  log => $self->app->log());
+					  log => $self->app->log);
 
   my @array;
   foreach ($source->hosts()) {
