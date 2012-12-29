@@ -41,15 +41,17 @@ sub hosts {
 		       int(rand(255)),
 		       int(rand(255)),
 		       int(rand(255))));
-    
+
     my $hostname = $foo->randregex('[a-z0-9]{4}'); # Prints 3 random digits
 
     push @hosts,Nagplot::Core::Types::Host->new(
+      services => [],
       metadata => { description => 'Marginally interesting data' },
-      provider => $self->name,
+      provider => $self->{name},
       ip => $ip,
       name => $hostname.".".$domain.".".$tld);
   }
+
   return @hosts;
 }
 

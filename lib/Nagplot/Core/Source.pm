@@ -29,6 +29,30 @@ has 'config' => ( is => 'rw' , isa => 'Ref', required => 1);
 has 'log' => ( is => 'rw', isa => 'Ref', required => 1);
 has 'provider' => ( is => 'rw' , isa => 'Str');
 
+sub init {
+  my $self = shift;
+  my @hosts;
+  foreach my $source (@{$self->config->{Sources}->{enabled}}) {
+    my $source_config = $self->config->{Sources}->{$source};
+    if (not defined $source_config) {
+      return Nagplot::Core::Types::Error->new(response => 'ErrSourceNotFound', 
+					      message => "Source ".$source." is not defined in your configuration");
+    }
+
+    my $finder = Module::Pluggable::Object->new(search_path => "Nagplot::Core::Source",
+						instantiate => 'new',
+						only => $source_config->{Plugin});
+
+    my @datasource = $finder->plugins(config => $self->config->{Sources}->{$source},
+				      log => $self->log,
+				      name => $source
+				     );
+
+    push @hosts,$datasource[0]->init();
+  }
+  return @hosts;
+}
+
 sub hosts {
   my $self = shift;
   my @hosts;
@@ -48,6 +72,7 @@ sub hosts {
 				      log => $self->log,
 				      name => $source
 				     );
+
     push @hosts,$datasource[0]->hosts() if $datasource[0]->can("hosts");
   }
   return @hosts;

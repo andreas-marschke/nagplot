@@ -42,7 +42,12 @@ sub sanitize {
   my $self = shift;
   my $obj = shift;
   my $unfrozen = $self->json->decode($obj->freeze());
-  my $class = delete $unfrozen->{"__CLASS__"};
+  if (defined $unfrozen->{services}) {
+    foreach (@{$unfrozen->{services}}) {
+      delete $_->{"__CLASS__"};
+    }
+  }
+  delete $unfrozen->{"__CLASS__"};
   return $unfrozen;
 }
 

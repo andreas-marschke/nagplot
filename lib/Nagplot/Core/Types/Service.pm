@@ -31,7 +31,7 @@ sub BUILD{
 }
 
 has 'name' => ( is => 'rw' , isa => 'Str');
-#has 'metric' => ( is => 'rw' , isa => 'Str', default => 'kB/s');
+has 'metric' => ( is => 'rw' , isa => 'Str', default => 'kB/s');
 has 'color' => ( is => 'rw' , isa => 'Str');
 has 'renderer' => ( is => 'rw' , isa => 'Str');
 

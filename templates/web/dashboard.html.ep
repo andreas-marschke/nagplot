@@ -1,3 +1,9 @@
 % layout 'default';
 % title 'Dashboard';
-<div id="root"></div>
+  <div id="root" class="container"> 
+    <div id="root-spin"> </div>
+    <div id="init-notification">
+      <h1>Loading</h1>
+    </div>
+  </div>
+  

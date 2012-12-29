@@ -2,18 +2,15 @@ define([
     "jquery",
     "underscore",
     "backbone",
+    "md5",
+    "rickshaw",
     "models/service"
-],function($, _, Backbone, Service){
+], function($, _, Backbone, md5, Rickshaw, Service) {
     var Services = Backbone.Collection.extend({
 	model: Service,
-	initialize: function(attributes) {
-	    this.Host = attributes.host;
-	    this.url = this.url();
-	},
-	url: function() {
-	    return '/json/services' 
-		+ '/' + this.Host.get('provider')
-		+ '/' + this.Host.get('name');
+	initialize: function(models, options) {
+	    this.host = options.host;
+	    this.url = '/json/services/' + this.host.get('provider') + '/' + this.host.get('name');
 	}
     });
     return Services;

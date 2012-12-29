@@ -4,6 +4,7 @@
   <title><%= title %></title>
   %= stylesheet 'css/reset.css'
   %= stylesheet 'css/style.css'
+  %= stylesheet 'css/bootstrap.css'
   <script data-main="js/init.js" src="js/vendor/require.js"></script>
 </head>
   <body>

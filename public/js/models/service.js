@@ -3,14 +3,26 @@ define([
     "underscore",
     "backbone",
     "md5",
-    "collections/states",
-    "models/state"
-], function($, _, Backbone, md5,States,State) {
+    "collections/states"
+], function($, _, Backbone, md5, States) {
+    /*
+      SYNOPSIS: 
+      var host = new Host({ name: "localhost", provider: "nagplot" });
+      var service = new Service({ name: "check_host", host: host });
+      setInterval(function(){ 
+        console.log(service.state());
+      }, 300);
+     */
     var Service = Backbone.Model.extend({
+	interval: 4000,
 	initialize: function() {
-	    this.attributes.Host = this.collection.Host;
-	    this.attributes.States = new States([], { service: this } );
+	    _.extend(this,Backbone.Events);
+	    this.set('hash', md5( this.get('collection').host.get('provider')
+				  + this.get('collection').host.get('name') 
+				  + this.get('name') ));
 
+	    this.states = new States([], { service: this });
+	    this.states.on("change",this.trigger('states-change'));
 	}
     });
     return Service;

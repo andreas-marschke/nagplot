@@ -1,0 +1,42 @@
+<div class="container" id="nagplot-host-table">
+<div class="offset6 span3" id="nagplot-host-search">
+  <form class="form-search" id="nagplot-host-search-form">
+  <div class="input-append">
+    <input type="text" class="span2 search-query">
+    <button type="submit" id="nagplot-host-search-query" class="btn">Search</button>
+  </div>
+  </form>
+</div>
+<table class="table table-striped" id="nagplot-host-table">
+  <thead>
+    <tr>
+      <th>
+	Provider
+      </th>
+      <th>
+	Hostname
+      </th>
+      <th>
+	# of Services
+      </th>
+    </tr>
+  </thead>
+  <% _.each(hosts,function(host) { %>
+    <tr>
+      <td>
+	<a href="/provider/<%= host.get('provider') %>"> <%= host.get('provider') %></a>
+      </td>
+      <td>
+	<a href="/host/<%= host.get('provider') %>/<%= host.get('name') %>"><%= host.get('name') %></a>
+      </td>
+      <td class="service-count" id="<%= host.get('hash') %>">
+	<div class="progress progress-striped active" style="width: 100px;">
+	  <div class="bar" style="width: 100%">Loading...</div>
+	</div>
+      </td>
+    </tr>
+  <% });%>
+</table>
+</div>
+
+

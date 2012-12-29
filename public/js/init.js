@@ -8,16 +8,9 @@ require.config({
 	'd3': {
 	    exports: 'd3'
 	},
-	'd3.layout': {
-	    deps: [
-		'd3'
-	    ],
-	    exports: 'd3.layout'
-	},
 	'rickshaw': {
 	    deps: [
-		'd3',
-		'd3.layout'
+		'd3'
 	    ],
 	    exports: 'Rickshaw'
 	},
@@ -30,33 +23,70 @@ require.config({
 		'jquery'
 	    ],
 	    exports: 'Backbone'
-	}
+	},
+	'spin': {
+	    exports: 'Spinner'
+	},
     },
     paths: {
 	md5: 'vendor/md5',
 	d3: 'vendor/d3',
-	'd3.layout': 'vendor/d3.layout',
 	rickshaw: 'vendor/rickshaw',
 	jquery: 'vendor/jquery',
 	underscore: 'vendor/underscore',
 	backbone: 'vendor/backbone',
-	text: 'vendor/text'
+	text: 'vendor/text',
+	Spinner: 'vendor/spin'
     }
 });	      
 
 require([
-    'collections/hosts'
-], function( Hosts ) {
+    'collections/hosts',
+    'views/host-table',
+    'Spinner',   
+    "models/host"
+], function( Hosts, HostTableView, Spinner, Host) {
+
     var hosts = new Hosts();
-    hosts.fetch({success: function(){
-	var host = hosts.at(0);
-	var services = host.get('Services');
-	services.fetch({success: function() { 
-	    var service = services.at(0);
-	    window.service = service;
-	}});	
-    }});
+
+    var target = document.getElementById('root-spin');
+    var spinner = new Spinner({
+	lines: 17,
+	length: 10,
+	width: 2, 
+	radius: 40,
+	corners: 1, 
+	rotate: 90,
+	color: '#000',
+	speed: 1,
+	trail: 100,
+	shadow: true,
+	hwaccel: true, 
+	className: 'spinner',
+	zIndex: 2e9,
+	top: 'auto',
+	left: 'auto'
+    }).spin(target);
+    target.classList.add('centered');
+
+    var view = new HostTableView({collection: hosts, el: $('#root')});
+    window.hosts = hosts;
+    $.ajax({
+	url: '/json/init',
+	type: 'GET',
+	success: function(data){ 
+	    _.each(data,function(host_data){
+		var host = new Host(host_data);
+		hosts.add(host);
+	    });
+	}
+    });
+    window.view = view;
+    
 });
+
+
+
 
 
 

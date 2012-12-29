@@ -69,12 +69,6 @@ The path to your Nagios main websites
 =cut
 has 'nagios_path' => ( is => 'rw', isa => 'Str', default => '/nagios', required => 0);
 
-=head2 log
-
-Object for managing the logging for the application
-
-=cut
-has 'log' => ( is => 'rw', isa => 'Ref', required => 1);
 
 =head2 user,pass
 
@@ -105,7 +99,7 @@ sub BUILD {
   my %params  = %{$self->config};
   $self->host($params{host})                       unless not defined $params{host};
   $self->cgi_path($params{cgi_path})               unless not defined $params{cgi_path};
-  $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_path};
+  $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_patoh};
   $self->user($params{user})                       unless not defined $params{user};
   $self->pass($params{pass})                       unless not defined $params{pass};
   $self->date_format($params{date_format})         unless not defined $params{date_format};
@@ -120,17 +114,22 @@ sub hosts {
   my $res = $ua->get($url)->res;
   if (defined $res->error) {
     return
-      Nagplot::Core::Types::Error->new(response => 'ConnectionFailed',
-				       message => 'Connection the host: '.$self->host." could not be established",
-				       metadata => {
-					 error => $res->error
-					});
+      Nagplot::Core::Types::Error->new(
+	provider => $self->name,
+	response => 'ConnectionFailed',
+	message => 'Connection the host: '.$self->host." could not be established",
+	metadata => {
+	  error => $res->error
+	 });
   }
 
   my $div = $res->dom->at('.data');
   if (not defined $div) {
-    return Nagplot::Core::Types::Error->new(response => 'DOMParseFailed',
-	   message => 'Response form the server at URL: '.$url." did not contain expected content");
+    return Nagplot::Core::Types::Error->new(
+      provider => $self->name,
+      response => 'DOMParseFailed',
+      message => 'Response form the server at URL: '
+	.$url." did not contain expected content");
   }
 
   my $content = $div->to_xml();
@@ -152,7 +151,8 @@ sub hosts {
 		  },
       ip => $_->[2],
       name => $_->[0],
-      provider => $self->name
+      provider => $self->name,
+      services => []
      );
 
   }
@@ -168,17 +168,21 @@ sub services {
   my $res = $ua->get($url)->res;
   if (defined $res->error) {
     return
-      Nagplot::Core::Types::Error->new(response => 'ConnectionFailed',
-				       message => 'Connection the host: '.$self->host." could not be established",
-				       metadata => {
-					 error => $res->error
-					});
+      Nagplot::Core::Types::Error->new(
+	provider => $self->name,
+	response => 'ConnectionFailed',
+	message => 'Connection the host: '.$self->host." could not be established",
+	metadata => {
+	  error => $res->error
+	 });
   }
 
   my $div = $res->dom->at('.data');
   if (not defined $div) {
-    return Nagplot::Core::Types::Error->new(response => 'DOMParseFailed',
-					    message => 'Response form the server at URL: '.$url." did not contain expected content");
+    return Nagplot::Core::Types::Error->new(
+      provider => $self->name,
+      response => 'DOMParseFailed',
+      message => 'Response form the server at URL: '.$url." did not contain expected content");
   }
 
   my $content = $div->to_xml();
@@ -195,6 +199,7 @@ sub services {
   foreach (@rows) {
     next unless ($_->[0] eq $host);
     push @services,Nagplot::Core::Types::Service->new(
+      provider => $self->name,
       metadata => { command => $_->[5] },
       name => $_->[1]
      );
@@ -212,17 +217,21 @@ sub state {
   my $res = $ua->get($url)->res;
   if (defined $res->error) {
     return
-      Nagplot::Core::Types::Error->new(response => 'ConnectionFailed',
-				       message => 'Connection the host: '.$self->host." could not be established",
-				       metadata => {
-					 error => $res->error
-					});
+      Nagplot::Core::Types::Error->new(
+	provider => $self->name,
+	response => 'ConnectionFailed',
+	message => 'Connection the host: '.$self->host." could not be established",
+	metadata => {
+	  error => $res->error
+	 });
   }
 
   my $state = $res->dom->at('.stateInfoTable1');
   if (not defined $state) {
-    return Nagplot::Core::Types::Error->new(response => 'DOMParseFailed',
-					    message => 'Response form the server at URL: '.$url." did not contain expected content");
+    return Nagplot::Core::Types::Error->new(
+      provider => $self->name,
+      response => 'DOMParseFailed',
+      message => 'Response form the server at URL: '.$url." did not contain expected content");
   }
   my $content = $state->to_xml();
   my $te = HTML::TableExtract->new();
