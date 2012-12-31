@@ -12,7 +12,6 @@ sub init {
 					  log => $self->app->log);
 
   my @array;
-  $self->app->log->info();
   foreach ($source->init()) {
     push @array,$json->sanitize($_);
   }
