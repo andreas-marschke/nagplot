@@ -25,7 +25,7 @@ use Moose;
 
 extends 'Nagplot::Core::Types::Meta';
 
-has 'services' => (is => 'rw', isa => 'ArrayRef');
+has 'services' => (is => 'rw', isa => 'ArrayRef', default => sub{ return []; });
 has 'name' => ( is => 'rw' , isa => 'Str');
 has 'ip' => ( is => 'rw' , isa => 'Str');
 has 'provider' => ( is => 'rw' , isa => 'Str', default => sub {
