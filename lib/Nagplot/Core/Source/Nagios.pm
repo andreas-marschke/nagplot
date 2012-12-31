@@ -62,14 +62,6 @@ the host or what you usually have configured in your webserver configuration.
 =cut
 has 'cgi_path' => ( is => 'rw', isa => 'Str', default => '/nagios/cgi-bin', required => 0 );
 
-=head2 nagios_path
-
-The path to your Nagios main websites
-
-=cut
-has 'nagios_path' => ( is => 'rw', isa => 'Str', default => '/nagios', required => 0);
-
-
 =head2 user,pass
 
 The username and password we are supposed to use if we want to authenticate with nagios
@@ -79,13 +71,6 @@ I<Leave both blank if you do not use the http-basic-authentication>
 =cut
 has 'user' => ( is => 'rw', isa => 'Str', default => 'nagplot', required => 0 );
 has 'pass' => ( is => 'rw', isa => 'Str', default => 'nagplot', required => 0 );
-
-=head2 date_format
-
-The B<date_format> used by Nagios. See I<nagios.cfg> for more information.
-
-=cut
-has 'date_format' => ( is => 'rw', isa => 'Str', default => '%m-%d-$Y %Y:%M:%S', required => 0);
 
 =head2 secure
 
@@ -99,10 +84,8 @@ sub BUILD {
   my %params  = %{$self->config};
   $self->host($params{host})                       unless not defined $params{host};
   $self->cgi_path($params{cgi_path})               unless not defined $params{cgi_path};
-  $self->nagios_path($params{nagios_path})         unless not defined $params{nagios_patoh};
   $self->user($params{user})                       unless not defined $params{user};
   $self->pass($params{pass})                       unless not defined $params{pass};
-  $self->date_format($params{date_format})         unless not defined $params{date_format};
   $self->secure($params{secure})                   unless not defined $params{secure};
 }
 
@@ -245,7 +228,7 @@ sub state {
   }
   my $json = {x => '0', y => '0'};
   my $text = $perf_data[0][1];
-  $json->{y} = $1 if ($text =~ m/=([0-9\.]+)/); 
+  $json->{y} = $1 if ($text =~ m/=([0-9\.]+)/);
   $json->{x} = DateTime->now->epoch();
   return Nagplot::Core::Types::State->new(data => $json);
 }
@@ -264,9 +247,4 @@ sub build_url{
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
-
-
-
-
-
 

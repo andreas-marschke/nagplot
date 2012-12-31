@@ -94,8 +94,6 @@ sub init {
 
 Get Information about the hosts.
 
-
-
 =cut
 
 sub hosts {
