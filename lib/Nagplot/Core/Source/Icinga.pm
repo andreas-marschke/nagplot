@@ -1,5 +1,34 @@
 #!/usr/bin/perl
 
+=head1 NAME
+
+Nagplot::Core::Source::Nagios - Nagios Source
+
+=head1 SYNOPSIS
+
+      "Icinga Classic" => {
+      Plugin => "Nagplot::Core::Source::Nagios",
+      host => 'classic.demo.icinga.org',
+      cgi_path => '/icinga/cgi-bin/',
+      nagios_path => '',
+      user => 'guest',
+      pass => 'guest',
+      secure => 0,
+      date_format => '%m-%d-%Y %T'
+     },
+
+
+=head1 DESCRIPTION
+
+This Source enables the use of the Icinga-Web REST API. Required for this to work you will need an Icinga version
+higher or equal to 1.6 .
+
+A I<prerequisite> for this Source to work is a working Icinga-Web configuration. Please refer to the Icinga
+documentation for an explanation on how to enable this: http://docs.icinga.org/latest/en/icinga-web-api.html
+
+=cut
+
+
 package Nagplot::Core::Source::Icinga;
 
 our $VERSION = '';
@@ -15,11 +44,59 @@ use Nagplot::Core::Types::Error;
 
 extends 'Nagplot::Core::Source::Meta';
 
+=head1 CONFIGURATION
+
+Following are configuration options you can set in your nagplot.conf file:
+
+=cut
+
+=head2 host
+
+The hostname or IP address which hosts your Icinga-Web instance
+
+=cut
+
 has 'host'     => ( is => 'rw', isa => 'Str');
+
+=head2 api_path
+
+The URI behind the hostname/ip address you defined in your 'host'. Using the default configuration
+on Debian Icinga installations this would be: B</icinga-web/web/api>
+
+=cut
+
 has 'api_path' => ( is => 'rw', isa => 'Str');
+
+=head2 user
+
+The username for which you have authorized appkit.api.access to be available
+
+=cut
+
 has 'user'     => ( is => 'rw', isa => 'Str');
+
+=head2 api_key
+
+The API key you have generated in the Icinga-Web configuration
+
+=cut
+
 has 'api_key'  => ( is => 'rw', isa => 'Str');
+
+=head2 secure
+
+If you configured icinga-web to run over HTTPS set this to "1" otherwise set it to "0".
+
+=cut
+
 has 'secure'   => ( is => 'rw', isa => 'Str', default => 1);
+
+=head2 protocol
+
+Currently only json is supported.
+
+=cut
+
 has 'protocol' => ( is => 'rw', isa => 'Str');
 
 sub BUILD {

@@ -4,6 +4,17 @@
 
 Nagplot::Core::Source::Nagios - Nagios Source
 
+=head1 SYNOPSIS
+
+    "Nagios Standard" => {
+      Plugin => "Nagplot::Core::Source::Nagios",
+      host => 'nagios.demo.netways.de',
+      cgi_path => '/nagios/cgi-bin',
+      user => 'guest',
+      pass => 'guest',
+      secure => 1
+     }
+
 =head1 DESCRIPTION
 
 The Nagios Source is basically a webscraper for Nagios. Performance data per service is taken as metric data for

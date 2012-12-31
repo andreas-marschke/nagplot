@@ -6,9 +6,11 @@ Nagplot::Core::Source::Dummy - Dummy testing Source
 
 =head1 SYNOPSIS
 
- use Nagplot::Core::Source::Dummy;
-
- my $object = Nagplot::Core::Source::Dummy->new(...);
+     "Dummy" => {
+       Plugin => "Nagplot::Core::Source::Dummy",
+       hosts => 4,
+       services => 2
+     }
 
 =head1 DESCRIPTION
 
@@ -29,13 +31,37 @@ use Nagplot::Core::Types::State;
 
 extends 'Nagplot::Core::Source::Meta';
 
+=head2 hosts
+
+Amount of hosts to generate randomly.
+
+=cut
+
+has 'host_num' => ( is => 'rw' , isa => 'Num', default => 10);
+
+=head2 services
+
+Amount of services to generate per host.
+
+=cut
+
+has 'service_num' => ( is => 'rw' , isa => 'Num', default => 5 );
+
+
+sub BUILD {
+  my $self = shift;
+  my %params = %{$self->config};
+  $self->hosts($params{host_num})       unless not defined $params{host_num};
+  $self->services($params{service_num}) unless not defined $params{service_num};
+}
+
 sub hosts {
   my $self = shift;
   my @hosts;
-  my $foo = new String::Random; 
+  my $foo = new String::Random;
   my $domain =  $foo->randregex('[a-z0-9]{6}');
   my $tld =  $foo->randregex('[a-z]{3}');
-  for (my $i = 0; $i < 10; $i++) {
+  for (my $i = 0; $i < $self->host_num; $i++) {
 
     my $ip =join('.', (int(rand(255)),
 		       int(rand(255)),
@@ -51,7 +77,6 @@ sub hosts {
       ip => $ip,
       name => $hostname.".".$domain.".".$tld);
   }
-
   return @hosts;
 }
 
@@ -78,9 +103,9 @@ sub services {
 	       'grey',
 	       'black');
 
-  my $foo = new String::Random; 
+  my $foo = new String::Random;
 
-  for (my $i = 0; $i < 10; $i++) {
+  for (my $i = 0; $i < $self->service_num; $i++) {
     my $check =  $foo->randregex('[a-z0-9]{6}');
 
     push @services,Nagplot::Core::Types::Service->new(
@@ -97,13 +122,17 @@ sub services {
 
 sub state {
   my $self = shift;
+  my $host = shift;
+  my $service = shift;
 
   return Nagplot::Core::Types::State->new(
     data => {
-      x => int(rand(1000)),
-      y => DateTime->now()->epoch()
+      "$service" => int(rand(1000))
    });
 }
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
+
+
+
