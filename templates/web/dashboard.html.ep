@@ -1,5 +1,6 @@
 % layout 'default';
 % title 'Dashboard';
+  <script data-main="js/init.js" src="js/vendor/require.js"></script>
   <div id="root" class="container"> 
     <div id="root-spin"> </div>
     <div id="init-notification">

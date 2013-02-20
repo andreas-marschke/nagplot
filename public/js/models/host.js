@@ -20,15 +20,15 @@ define([
 	initialize: function(attributes) {
 	    _.extend(this,Backbone.Events);
 	    this.set('hash', md5(this.get('provider') + this.get('name')));
-	    this.services = new Services([], { host: this });
+	    this.attributes.services = new Services([], { host: this });
 	    var that = this;
 	    if(attributes.services.length > 0) {
 		_.each(attributes.services,function(service){
 		    service.collection = that.services;
-		    that.services.add(new Service(service));
+		    that.attributes.services.add(new Service(service));
 		});
 	    }
-	    this.services.on('change',  this.trigger('services-update'));
+/*	    this.get('services').on('change',  this.trigger('services-update')); */
 	}
     });
     return Host;

@@ -7,5 +7,9 @@ sub dashboard {
   $self->render();
 }
 
-no Moose;
+sub designer {
+  my $self = shift;
+  $self->render();
+}
+
 1;

@@ -23,6 +23,10 @@ sub startup {
   # Web Page Routing
   $r->get('/')->to(controller => 'web', action => 'dashboard');
   $r->get('/host')->to(controller => 'web', action => 'host');
+  $r->get('/designer')->to(controller => 'web', action => 'designer');
+
+  $r->get('/data/widgets')->to(controller => 'data', action => 'widgets');
+  $r->get('/data/layouts')->to(controller => 'data', action => 'layouts');
 
   # Data Routing
   $r->get('/json/init')->to(controller => 'json', action => 'init');

@@ -2,6 +2,10 @@
   mode => 'development', 
   secret => 'nagplot',
   static_root => './public',
+  Data => {
+    widgets => "./public/widget.conf.d",
+    layouts => "./public/layouts.conf.d"
+  },
   Sources => {
     enabled => ["Icinga Classic","Nagios Standard"],
     "Icinga Classic" => {

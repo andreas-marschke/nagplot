@@ -3,8 +3,9 @@ define([
     "underscore",
     "backbone",
     "md5",
+    "rickshaw",
     "collections/states"
-], function($, _, Backbone, md5, States) {
+], function($, _, Backbone, md5, Rickshaw, States) {
     /*
       SYNOPSIS: 
       var host = new Host({ name: "localhost", provider: "nagplot" });
@@ -17,13 +18,17 @@ define([
 	interval: 4000,
 	initialize: function() {
 	    _.extend(this,Backbone.Events);
-	    this.set('hash', md5( this.get('collection').host.get('provider')
-				  + this.get('collection').host.get('name') 
+	    this.set('hash', md5( this.collection.host.get('provider')
+				  + this.collection.host.get('name')
 				  + this.get('name') ));
 
-	    this.states = new States([], { service: this });
-	    this.states.on("change",this.trigger('states-change'));
+	    this.attributes.states = new States([], { service: this });
+//	    this.attributes.states.on("change",this.trigger('states-change'));
+	},
+	update: function() {
+	    this.get('states').fetch();
 	}
     });
+    
     return Service;
 });

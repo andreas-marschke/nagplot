@@ -50,7 +50,7 @@ sub hosts {
   }
   my $json = $res->json;
   if (not defined $json->{result}) {
-    if ($json->{success} eq 'false') {
+    if ($json->{error} eq 'false') {
       return Nagplot::Core::Types::Error->new(
 	provider => $self->name,
 	response => 'QueryError',

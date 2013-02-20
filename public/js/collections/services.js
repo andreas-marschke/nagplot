@@ -3,9 +3,8 @@ define([
     "underscore",
     "backbone",
     "md5",
-    "rickshaw",
     "models/service"
-], function($, _, Backbone, md5, Rickshaw, Service) {
+], function($, _, Backbone, md5, Service) {
     var Services = Backbone.Collection.extend({
 	model: Service,
 	initialize: function(models, options) {
