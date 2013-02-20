@@ -1,0 +1,19 @@
+<!-- templates/designer/modals/modal-tab.html -->
+<div class="tabbable tabs-top">
+  <ul class="nav nav-tabs">
+  <% _.each(pages,function(page){ %>   
+    <li <% if(page.active ) { %> class="active" <% } %>>
+      <a href="#<%= page.id %>" data-toggle="tab">
+        <%= page.name%>
+      </a>
+    </li>
+  <% }); %>
+  </ul>
+  <div class="tab-content">
+    <% _.each(pages, function(page){ %>   
+      <div class="tab-pane <% if( page.active ) { %> active <% } %>" id="<%= page.id %>">
+        <%= page.html %>
+      </div>
+    <% }); %>
+  </div>
+</div>

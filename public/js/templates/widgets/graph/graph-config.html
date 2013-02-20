@@ -1,0 +1,53 @@
+<!-- templates/widgets/graph/graph-config.html -->
+<form class="form-horizontal">
+  <div class="control-group">
+    <label class="control-label" for="graphHeight">Height</label>
+    <div class="controls">
+      <input type="number" class="span2" id="graphHeight" val="300" type="text" value="200"/>    
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="graphWidth">Width</label>
+    <div class="controls">
+      <input type="number" class="span2" id="graphWidth" val="200" type="text" value="300"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="colorScheme">Color Scheme</label>
+    <div class="controls">
+      <select id="colorScheme" class="span2">
+	<% var fixtures = new Rickshaw.Fixtures.Color(); %>
+	<% _.each(_.keys(fixtures.schemes),function(scheme){ %>
+        <option><%= scheme %></option>
+	<% }); %>
+      </select>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="legend-check">Legend</label>
+    <div class="controls">
+      <input type="checkbox" class="pull-left span2" id="legend-check"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="detail">Detail(hover)</label>
+    <div class="controls">
+      <input type="checkbox" class="pull-left span2" id="detail"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="axis">Axis</label>
+    <div class="controls" id="axis">
+      <input type="checkbox" class="pull-left span1" id="Xaxis">X</input>
+      <input type="checkbox" class="pull-left span1" id="Yaxis">Y</input>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="preview">Preview</label>
+    <div class="controls">
+      <div class="pull-center" id="preview"></div>
+    </div>
+  </div>
+
+
+

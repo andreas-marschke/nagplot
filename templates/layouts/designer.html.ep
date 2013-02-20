@@ -1,0 +1,23 @@
+<!doctype html>
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title><%= title %></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  %= stylesheet '/css/reset.css'  
+  %= stylesheet '/css/chosen.css'
+  %= stylesheet '/css/bootstrap.css'
+  %= stylesheet '/css/font-awesome.min.css'
+  %= stylesheet '/css/rickshaw.min.css'
+  %= stylesheet '/css/style.css'
+  %= stylesheet 'css/designer/wizard-init.css'
+  %= stylesheet 'css/designer/layout-select.css'
+  %= stylesheet 'css/designer/dashboard-designer.css'
+  <script data-main="js/designer.js" src="js/vendor/require.js"></script>
+</head>
+<body>
+  <%= content %>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!-- templates/designer/modals/widget-config.html -->
+<div id="designer-widget-modal" class="modal hide fade" tabindex="-1" role="dialog">
+  <div class="modal-header">
+    <button type="button" class="close">×</button>
+    <h3 id="designer-widget-modal-title">Element Configuration</h3>
+  </div>
+  <div class="modal-body">
+    <p> Select the widget you want to add</p>
+    <div class= "accordion" id= "category">
+      <% categories.each(function(category){%>
+        <div class= "accordion-group">
+	  <div class= "accordion-heading">
+	    <a class= "accordion-toggle" data-toggle= "collapse" data-parent= "#category" href= "#<%= category.get("id")%>">
+	      <%= category.get("name")%>
+	    </a>
+          </div>
+          <div id= "<%= category.get("id")%>" class= "accordion-body collapse">
+            <div class= "accordion-inner">
+	      <ul>
+		<% category.get('elements').each(function(widget){%>
+		<div class="btn btn-mini widget" id="<%= widget.get('id')%>">
+		  <div class="head">
+	            <h5><%= widget.get("name") %></h5>
+	          </div>
+	          <div class="body">
+	            <div class="preview">
+		      <img src="<%= widget.get('preview')%>"></img>
+	            </div>
+	          </div>
+	        </div>
+		<% }); %>
+	      </ul>
+	    </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="pull-right">
+      <button class="btn close-modal" data-dismiss="modal" aria-hidden="true">Close</button>
+      <button class="btn btn-primary save disabled">Save changes</button>
+    </div>
+  </div>
+</div>

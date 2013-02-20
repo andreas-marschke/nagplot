@@ -1,0 +1,71 @@
+#layout-select {
+  position: relative; 
+  top: 20px;
+}
+
+#layout-select .hero-unit {
+  text-align: center;
+}
+
+#layout-select .button-wrapper {
+  width: 100%;
+}
+#layout-select .button-wrapper a.btn {
+  width: 33%;
+  margin: 0 auto;
+  display:block;
+}
+
+#layout-select a.btn.exists {
+  margin-top: 5px;
+}
+
+#layout-select .container {
+  display: inline-block;
+  padding: 0;
+  max-width: 100%;
+  min-width: 430px;
+}
+
+#layout-select .container .layout {
+  width: 100px;
+  min-height: 180px;
+  float: left;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+#layout-select .container .layout .head {
+  margin-top: 3px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+#layout-select .container .layout .head h5 {
+  margin-bottom: 3px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #333;
+} 
+
+#layout-select .container .layout .body {
+  padding-bottom: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+#layout-select .container .layout .body .preview {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+#layout-select .container .layout .body .preview img {
+  width: 64px;
+  height: 64px;
+}
+
+#layout-select .container .layout .body p {
+  line-height: 15px;
+  font-size: 12px;
+}
+

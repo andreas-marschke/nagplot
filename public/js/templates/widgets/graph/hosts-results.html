@@ -1,0 +1,20 @@
+<!-- templates/widgets/graph/hosts-results.html -->
+<div class= "accordion" id= "category">
+  <% hosts.each(function(host){%>
+  <div class= "accordion-group">
+    <div class= "accordion-heading">
+      <span class= "accordion-toggle" data-toggle= "collapse" data-parent= "#category" id="heading-<%= host.get("hash")%>" href= "#<%= host.get("hash")%>">
+        <span>
+	  <i class="icon-spinner icon-spin"></i> <%= host.get("name")%> 
+          <input class="pull-right" type="checkbox"/>
+        </span>
+      </span>
+    </div>
+    <div id= "<%= host.get("hash") %>" class= "accordion-body collapse">
+      <div class= "accordion-inner">
+	
+      </div>
+    </div>
+  </div>
+  <% }); %>
+</div>

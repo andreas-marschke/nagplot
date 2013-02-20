@@ -1,0 +1,35 @@
+#designer-widget-modal .tab-content .tab-pane .search-query{
+  margin: 3px;
+}
+
+#dashboard-designer .show-grid [class*="span"] {
+  background-color: #EEE;
+  text-align: center;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  min-height: 40px;
+  line-height: 40px;
+  margin-top: 3px;
+}
+
+#dashboard-designer .row {
+  width: 103%;
+}
+
+#dashboard-designer .element {
+  margin-top: 3px;
+}
+
+#dashboard-designer .element span {
+  padding-left: 10px;
+}
+
+#css {
+  width: 400px;
+  height: 100%;  
+}
+
+.pull-center {
+  margin: 0 auto;
+}

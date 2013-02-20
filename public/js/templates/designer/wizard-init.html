@@ -1,0 +1,25 @@
+<!-- templates/designer/wizard-init.html -->
+<div id="wizard-init" class="container-fluid">
+<div class="jumbotron">
+  <div class="hero-unit">
+    <h1>Dashboard Wizard</h1>
+    <p>Manage your dashboard designs</p>
+    <div class="button-wrapper">
+      <a class="new btn btn-primary btn-large">
+	Create a <strong>NEW</strong> layout
+	<span><small></small></span>
+      </a>
+      <% if (designs.length > 0 ) { %>
+      <a class="exists btn btn-large">
+	Edit an existing Layout
+	<span><small>
+	  <% _.each(designs,function(design) { %>
+	    <%= design.get('name') %>
+	  <% }); %>
+	</small></span>
+      </a>
+      <% } %>
+    </div>
+  </div>
+  </div>
+</div>

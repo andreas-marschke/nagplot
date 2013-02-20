@@ -1,0 +1,25 @@
+<!-- templates/designer/layout-select.html -->
+<div id="layout-select" class="container-fluid">
+  <div class="jumbotron">
+    <div class="hero-unit">
+      <h1>Select a Layout!</h1>
+      <p>You can select one of these Layouts...</p>
+      <div class="container">
+	<% layouts.each(function(layout){ %>
+	  <div class="btn btn-mini layout" id="<%= layout.get('id')%>">
+	    <div class="head">
+	      <h5><%= layout.get("name") %></h5>
+	    </div>
+	    <div class="body">
+	      <div class="preview">
+		<img src="<%= layout.get('preview')%>"></img>
+	      </div>
+	      <p><%= layout.get("description") %></p>
+	    </div>
+	  </div>
+	<% }); %>
+	<div style="clear:both;"></div>
+      </div>
+    </div>
+  </div>
+</div>

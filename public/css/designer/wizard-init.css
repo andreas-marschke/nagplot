@@ -1,0 +1,23 @@
+#wizard-init {
+  position: relative; 
+  top: 20px;
+}
+
+#wizard-init .hero-unit {
+  text-align: center;
+}
+
+#wizard-init .button-wrapper {
+  width: 100%;
+}
+#wizard-init .button-wrapper a.btn {
+  width: 33%;
+  margin: 0 auto;
+  display:block;
+}
+
+#wizard-init a.btn.exists {
+  margin-top: 5px;
+}
+
+
