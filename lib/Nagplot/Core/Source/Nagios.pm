@@ -237,11 +237,9 @@ sub state {
   foreach my $ts ( $te->tables ) {
     push @last_check,$ts->rows->[4];
   }
-  my $json = {x => '0', y => '0'};
   my $text = $perf_data[0][1];
-  $json->{y} = $1 if ($text =~ m/=([0-9\.]+)/);
-  $json->{x} = DateTime->now->epoch();
-  return Nagplot::Core::Types::State->new(data => $json);
+  $text = $1 if ($text =~ m/=([0-9\.]+)/);
+  return Nagplot::Core::Types::State->new(data => { "$service" => $text });
 }
 
 
